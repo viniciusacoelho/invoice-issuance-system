@@ -12,7 +12,7 @@
     <artifactId>invoice-issuance-system</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>>Invoice Issuance System</name>
-    <description>REST API for invoice issuance and product management, developed with Java and Spring Boot</description>
+    <description>REST API for managing products and issuing invoices, developed with Java and Spring Boot</description>
     <url/>
     <licenses>
         <license/>
@@ -42,7 +42,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.1.0</version>
+        </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
