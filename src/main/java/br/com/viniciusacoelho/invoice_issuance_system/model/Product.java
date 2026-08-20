@@ -26,16 +26,23 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+// TODO: Check for a way to fix the issue that occurs when updating the product, where the system consistently indicates that null values cannot be accepted.
+//    @Column(nullable = false)
+//    private long code = this.id * 1000;
     private Long code;
 
+//    @Column(length = 50, nullable = false)
     @Column(length = 50)
     private String name;
 
+//    @Column(length = 1000, nullable = false)
     @Column(length = 1000)
     private String description;
 
+    //    @Column(nullable = false)
     private Long quantity;
 
+    //    @Column(nullable = false)
     private BigDecimal balance;
 
 }
