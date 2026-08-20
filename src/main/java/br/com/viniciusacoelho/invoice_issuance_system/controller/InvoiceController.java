@@ -27,9 +27,9 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-    @PostMapping("/create")
-    public ResponseEntity<Invoice> create(@Valid @RequestBody InvoiceDTO invoiceDTO) {
-        return ResponseEntity.ok(invoiceService.create(invoiceDTO));
+    @PostMapping("/create/{product_id}/{product_quantity}")
+    public ResponseEntity<Invoice> create(@PathVariable("product_id") Long productId, @PathVariable("product_quantity") Integer productQuantity) {
+        return ResponseEntity.ok(invoiceService.create(productId, productQuantity));
     }
 
     @GetMapping("/read")
