@@ -4,13 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-import java.math.BigDecimal;
-
 public record ProductDTO(
-
-        @NotNull(message = "Código não deve ser vazio.")
-        @Positive(message = "Código não deve ser negativo.")
-        Long code,
 
         @NotNull(message = "Nome não deve ser vazio.")
         @Size(min = 3, max = 50, message = "Nome deve ter no mínimo {min} e no máximo {max} caracteres.")
@@ -20,13 +14,9 @@ public record ProductDTO(
         @Size(min = 3, max = 50, message = "Descrição deve ter no mínimo {min} e no máximo {max} caracteres.")
         String description,
 
-        @NotNull(message = "Quantidade não deve ser vazia.")
-        @Positive(message = "Quantidade não deve ser negativa.")
-        Long quantity,
-
-        @NotNull(message = "Saldo não deve ser vazio.")
-        @Positive(message = "Saldo não deve ser negativo.")
-        BigDecimal balance
+        @NotNull(message = "Estoque não deve ser vazio.")
+        @Positive(message = "Estoque não deve ser negativo.")
+        Integer stock
 
 ) {
 
