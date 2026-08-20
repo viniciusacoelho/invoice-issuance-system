@@ -11,9 +11,11 @@ public record InvoiceDTO(
 
         @NotNull(message = "Número sequencial não deve ser vazio.")
         @Positive(message = "Número sequencial não deve ser negativo.")
-        long sequentialNumbering,
+        long sequentialNumber,
 
         @NotNull(message = "Produtos não devem ser vazios.")
-        List<Product> products) {
+        List<Product> products
+
+) {
 
 }

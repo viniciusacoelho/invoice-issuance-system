@@ -9,7 +9,7 @@ import java.util.List;
 public record InvoiceUpdateDTO(
 
         @Positive(message = "Número sequencial não deve ser negativo.")
-        long sequentialNumbering,
+        long sequentialNumber,
 
         List<Product> products
 
