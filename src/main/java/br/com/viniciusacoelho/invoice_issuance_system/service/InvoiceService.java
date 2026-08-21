@@ -23,12 +23,12 @@ public class InvoiceService {
 
     public Invoice create(Long productId, Integer productQuantity) {
         Product product = productService.findById(productId);
+        productService.removeStock(productId, productQuantity);
         Invoice invoice = Invoice.builder()
                 .sequentialNumber(calculateSequentialNumber())
                 .status(setStatusOpen())
-                .productQuantity(productQuantity)
                 .build();
-        addProduct(invoice, product);
+        addProduct(invoice, product, productQuantity);
         invoiceRepository.save(invoice);
         return invoice;
     }
@@ -70,10 +70,6 @@ public class InvoiceService {
             invoice.setProductQuantity(invoice.getProductQuantity() + productQuantity);
             invoice.getProducts().add(product);
         }
-    }
-
-    private static void addProduct(Invoice invoice, Product product) {
-        invoice.getProducts().add(product);
     }
 
     public Invoice addProduct(Long invoiceId, Long productId, Integer productQuantity) {

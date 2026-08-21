@@ -19,11 +19,10 @@ public class ProductService {
 
     public Product create(ProductDTO productDTO) {
         Product product = Product.builder()
-                .code(productDTO.code())
+                .code(createCode())
                 .name(productDTO.name())
                 .description(productDTO.description())
-                .quantity(productDTO.quantity())
-                .balance(productDTO.balance())
+                .stock(productDTO.stock())
                 .build();
         return productRepository.save(product);
     }
@@ -35,27 +34,26 @@ public class ProductService {
         return null;
     }
 
+    // TODO: Check why it is saving with null values.
     public Product update(Long id, ProductUpdateDTO productUpdateDTO) {
         Product product = findById(id);
-        product.setCode(productUpdateDTO.code());
         product.setName(productUpdateDTO.name());
         product.setDescription(productUpdateDTO.description());
-        product.setQuantity(productUpdateDTO.quantity());
-        product.setBalance(productUpdateDTO.balance());
+        product.setStock(productUpdateDTO.stock());
         return productRepository.save(product);
     }
 
     public Product delete(Long id) {
         hasProduct(id);
         productRepository.deleteById(id);
-        return findById(id);
+        return null;
     }
 
     public List<Product> findByName(String name) {
         return productRepository.findByName(name);
     }
 
-    private Product findById(Long id) {
+    public Product findById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(Product.class.getName()));
     }
@@ -68,6 +66,47 @@ public class ProductService {
 
     private boolean isProduct() {
         return productRepository.count() > 0;
+    }
+
+    public void addStock(Long id, Integer quantity) {
+        Product product = findById(id);
+        if (isQuantityValid(product.getStock(), quantity)) {
+            product.setStock(product.getStock() + quantity);
+            productRepository.save(product);
+            return;
+        }
+        throw new IllegalArgumentException("Quantidade inválida"); // TODO: Personalized Exception
+    }
+
+    public void removeStock(Long id, Integer quantity) {
+        Product product = findById(id);
+        if (isQuantityValid(product.getStock(), quantity)) {
+            product.setStock(product.getStock() - quantity);
+            productRepository.save(product);
+            return;
+        }
+        throw new IllegalArgumentException("Quantidade inválida"); // TODO: Personalized Exception
+    }
+
+    private boolean isQuantityValid(Integer stock, Integer quantity) {
+        return quantity <= stock;
+    }
+
+    private String createCode() {
+        long id = productRepository.count() + 1;
+        if (id < 10) {
+            return "00000" + id;
+        } else if (id < 100) {
+            return "0000" + id;
+        } else if (id < 1000) {
+            return "000" + id;
+        } else if (id < 10000) {
+            return "00" + id;
+        } else if (id < 100000) {
+            return "0" + id;
+        } else {
+            return "" + id;
+        }
     }
 
 }
