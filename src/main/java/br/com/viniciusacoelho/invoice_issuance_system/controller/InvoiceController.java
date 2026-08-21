@@ -27,8 +27,8 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-    @PostMapping("/create/{product_id}/{product_quantity}")
-    public ResponseEntity<Invoice> create(@PathVariable("product_id") Long productId, @PathVariable("product_quantity") Integer productQuantity) {
+    @PostMapping("/create/{productId}/{productQuantity}")
+    public ResponseEntity<Invoice> create(@PathVariable("productId") Long productId, @PathVariable("productQuantity") Integer productQuantity) {
         return ResponseEntity.ok(invoiceService.create(productId, productQuantity));
     }
 
@@ -37,9 +37,21 @@ public class InvoiceController {
         return ResponseEntity.ok(invoiceService.read());
     }
 
-    @PutMapping("/update/{id}")
-    public ResponseEntity<Invoice> update(@PathVariable("id") Long id, @Valid @RequestBody InvoiceUpdateDTO invoiceUpdateDTO) {
-        return ResponseEntity.ok(invoiceService.update(id, invoiceUpdateDTO));
+//    @PutMapping("/update/{id}")
+//    public ResponseEntity<Invoice> update(@PathVariable("id") Long id, @Valid @RequestBody InvoiceUpdateDTO invoiceUpdateDTO) {
+//        return ResponseEntity.ok(invoiceService.update(id, invoiceUpdateDTO));
+//    }
+
+    @PutMapping("/update/{invoiceId}/add/{productId}/{productQuantity}")
+    public ResponseEntity<Invoice> addProduct(@PathVariable("invoiceId") Long invoiceId, @PathVariable("productId") Long productId, @PathVariable("productQuantity") Integer productQuantity) {
+        Invoice invoice = invoiceService.addProduct(invoiceId, productId, productQuantity);
+        return ResponseEntity.ok(invoiceService.update(invoice));
+    }
+
+    @PutMapping("/update/{invoiceId}/remove/{productId}/{productQuantity}")
+    public ResponseEntity<Invoice> removeProduct(@PathVariable("invoiceId") Long invoiceId, @PathVariable("productId") Long productId, Integer productQuantity) {
+        Invoice invoice = invoiceService.removeProduct(invoiceId, productId, productQuantity);
+        return ResponseEntity.ok(invoiceService.update(invoice));
     }
 
     @DeleteMapping("/delete/{id}")

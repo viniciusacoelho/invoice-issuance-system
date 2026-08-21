@@ -21,9 +21,8 @@ public class InvoiceService {
     @Autowired
     private ProductService productService;
 
-    public Invoice create(Long  productId, Integer productQuantity) {
+    public Invoice create(Long productId, Integer productQuantity) {
         Product product = productService.findById(productId);
-        productService.updateStock(productId, productQuantity);
         Invoice invoice = Invoice.builder()
                 .sequentialNumber(calculateSequentialNumber())
                 .status(setStatusOpen())
@@ -41,10 +40,7 @@ public class InvoiceService {
         return null;
     }
 
-    public Invoice update(Long id, InvoiceUpdateDTO invoiceUpdateDTO) {
-        Invoice invoice = findById(id);
-        invoice.setSequentialNumber(invoiceUpdateDTO.sequentialNumber());
-//        invoice.setProducts(invoiceUpdateDTO.products());
+    public Invoice update(Invoice invoice) {
         return invoiceRepository.save(invoice);
     }
 
@@ -69,8 +65,49 @@ public class InvoiceService {
         return invoiceRepository.count() > 0;
     }
 
+    public void addProduct(Invoice invoice, Product product, Integer productQuantity) {
+        if (productQuantity > 0) {
+            invoice.setProductQuantity(invoice.getProductQuantity() + productQuantity);
+            invoice.getProducts().add(product);
+        }
+    }
+
     private static void addProduct(Invoice invoice, Product product) {
         invoice.getProducts().add(product);
+    }
+
+    public Invoice addProduct(Long invoiceId, Long productId, Integer productQuantity) {
+        Invoice invoice = findById(invoiceId);
+        Product product = productService.findById(productId);
+        addProductQuantity(invoice, productQuantity);
+        productService.removeStock(productId, productQuantity);
+        invoice.getProducts().add(product);
+        return invoice;
+    }
+
+    public Invoice removeProduct(Long invoiceId, Long productId, Integer productQuantity) {
+        Invoice invoice = findById(invoiceId);
+        Product product = productService.findById(productId);
+        removeProductQuantity(invoice, productQuantity);
+        productService.addStock(productId, productQuantity);
+        invoice.getProducts().remove(product);
+        return invoice;
+    }
+
+    private void addProductQuantity(Invoice invoice, Integer productQuantity) {
+        isProductQuantityValid(invoice, productQuantity);
+        invoice.setProductQuantity(invoice.getProductQuantity() + productQuantity);
+    }
+
+    private void removeProductQuantity(Invoice invoice, Integer productQuantity) {
+        isProductQuantityValid(invoice, productQuantity);
+        invoice.setProductQuantity(invoice.getProductQuantity() - productQuantity);
+    }
+
+    private void isProductQuantityValid(Invoice invoice, Integer productQuantity) {
+        if (productQuantity > invoice.getProductQuantity()) {
+            throw new IllegalArgumentException("Quantidade de produtos inválida!");
+        }
     }
 
     private long calculateSequentialNumber() {
