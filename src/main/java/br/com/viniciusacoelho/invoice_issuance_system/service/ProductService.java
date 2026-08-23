@@ -2,6 +2,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 
 import br.com.viniciusacoelho.invoice_issuance_system.dto.ProductDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.ProductUpdateDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.ProductRepository;
@@ -75,7 +76,7 @@ public class ProductService {
             productRepository.save(product);
             return;
         }
-        throw new IllegalArgumentException("Estoque inválido!"); // TODO: Personalized Exception
+        throw new BadRequestException("Estoque");
     }
 
     public void removeStock(Long id, Integer quantity) {
@@ -85,7 +86,7 @@ public class ProductService {
             productRepository.save(product);
             return;
         }
-        throw new IllegalArgumentException("Estoque inválido!"); // TODO: Personalized Exception
+        throw new BadRequestException("Estoque");
     }
 
     private static boolean isStockValid(Integer stock, Integer quantity) {

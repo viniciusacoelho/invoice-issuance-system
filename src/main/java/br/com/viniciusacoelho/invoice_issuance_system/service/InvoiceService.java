@@ -1,8 +1,6 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceUpdateDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidProductQuantityException;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Invoice;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
@@ -55,7 +53,7 @@ public class InvoiceService {
 
     private Invoice findById(Long id) {
         return invoiceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Nota Fiscal"));
+                .orElseThrow(() -> new NotFoundException("Nota fiscal"));
     }
 
     private void hasInvoice(Long id) {
@@ -105,7 +103,7 @@ public class InvoiceService {
 
     private static void isProductQuantityValid(Integer productQuantity, Integer productStock) {
         if (productQuantity > productStock) {
-            throw new IllegalArgumentException("Quantidade de produtos inválida!"); // TODO: Personalized Exception
+            throw new BadRequestException("Quantidade de produtos");
         }
     }
 
