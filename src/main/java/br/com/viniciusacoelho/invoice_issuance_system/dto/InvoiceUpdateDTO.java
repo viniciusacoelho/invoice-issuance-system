@@ -8,8 +8,8 @@ import java.util.List;
 
 public record InvoiceUpdateDTO(
 
-        @Positive(message = "Número sequencial não deve ser negativo.")
-        long sequentialNumber,
+        @Positive(message = "A quantidade do produto deve ser maior que zero.")
+        Integer productQuantity,
 
         List<Product> products
 

@@ -9,11 +9,11 @@ import java.util.List;
 
 public record InvoiceDTO(
 
-        @NotNull(message = "Número sequencial não deve ser vazio.")
-        @Positive(message = "Número sequencial não deve ser negativo.")
-        long sequentialNumber,
+        @NotNull(message = "A quantidade do produto é obrigatória.")
+        @Positive(message = "A quantidade do produto deve ser maior que zero.")
+        Integer productQuantity,
 
-        @NotNull(message = "Produtos não devem ser vazios.")
+        @NotNull(message = "A lista de produtos é obrigatória.")
         List<Product> products
 
 ) {

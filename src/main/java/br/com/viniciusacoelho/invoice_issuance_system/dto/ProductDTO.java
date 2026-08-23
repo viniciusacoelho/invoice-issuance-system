@@ -2,32 +2,32 @@ package br.com.viniciusacoelho.invoice_issuance_system.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
 public record ProductDTO(
 
-        @NotNull(message = "Nome não deve ser vazio.")
-        @Size(min = 3, max = 50, message = "Nome deve ter no mínimo {min} e no máximo {max} caracteres.")
+        @NotNull(message = "O nome é obrigatório.")
+        @Size(min = 3, max = 50, message = "O nome deve ter entre {min} e {max} caracteres.")
         String name,
 
-        @NotNull(message = "Descrição não deve ser vazia.")
-        @Size(min = 3, max = 50, message = "Descrição deve ter no mínimo {min} e no máximo {max} caracteres.")
+        @NotNull(message = "A descrição é obrigatória.")
+        @Size(min = 3, max = 1000, message = "A descrição deve ter entre 3 e 1000 caracteres.")
         String description,
 
-        @NotNull(message = "Preço não deve ser vazio.")
+        @NotNull(message = "O preço é obrigatório.")
         @Positive(message = "O preço deve ser maior que zero.")
         BigDecimal price,
 
-        @NotNull(message = "Estoque não deve ser vazio.")
-        @Positive(message = "Estoque não deve ser negativo.")
+        @NotNull(message = "O estoque é obrigatório.")
+        @PositiveOrZero(message = "O estoque deve ser maior ou igual a zero.")
         Integer stock,
 
-        @NotNull(message = "Categoria não deve ser vazio.")
-        @Size(min = 3, max = 50, message = "Categoria deve ter no mínimo {min} e no máximo {max} caracteres.")
+        @NotNull(message = "A categoria é obrigatória")
+        @Size(min = 3, max = 50, message = "A categoria deve ter entre {min} e {max} caracteres.")
         String category
-
 
 ) {
 
