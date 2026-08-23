@@ -23,7 +23,9 @@ public class ProductService {
                 .code(createCode())
                 .name(productDTO.name())
                 .description(productDTO.description())
+                .price(productDTO.price())
                 .stock(productDTO.stock())
+                .category(productDTO.category())
                 .build();
         return productRepository.save(product);
     }
@@ -40,7 +42,9 @@ public class ProductService {
         Product product = findById(id);
         product.setName(productUpdateDTO.name());
         product.setDescription(productUpdateDTO.description());
+        product.setPrice(productUpdateDTO.price());
         product.setStock(productUpdateDTO.stock());
+        product.setCategory(productUpdateDTO.category());
         return productRepository.save(product);
     }
 
@@ -59,7 +63,8 @@ public class ProductService {
                 .orElseThrow(() -> new NotFoundException("Produto"));
     }
 
-    private void hasProduct(Long id) {
+//    private void hasProduct(Long id) {
+    public void hasProduct(Long id) {
         if (!productRepository.existsById(id)) {
             throw new NotFoundException("Produto");
         }

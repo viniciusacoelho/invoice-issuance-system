@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "products")
 @Data
@@ -26,7 +28,6 @@ public class Product {
 
 // TODO: Check for a way to fix the issue that occurs when updating the product, where the system consistently indicates that null values cannot be accepted.
 //    @Column(nullable = false)
-//    private long code = this.id * 1000;
     private String code;
 
 //    @Column(length = 50, nullable = false)
@@ -37,7 +38,14 @@ public class Product {
     @Column(length = 1000)
     private String description;
 
-    //    @Column(nullable = false)
+//    @Column(nullable = false)
+    private BigDecimal price;
+
+//    @Column(nullable = false)
     private Integer stock;
+//    @Column(nullable = false)
+
+    @Column(length = 50)
+    private String category;
 
 }
