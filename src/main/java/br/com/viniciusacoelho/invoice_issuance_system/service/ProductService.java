@@ -31,7 +31,7 @@ public class ProductService {
         if (isProduct()) {
             return productRepository.findAll();
         }
-        return null;
+        throw new NotFoundException("Produtos");
     }
 
     // TODO: Check why it is saving with null values.
@@ -55,12 +55,12 @@ public class ProductService {
 
     public Product findById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(Product.class.getName()));
+                .orElseThrow(() -> new NotFoundException("Produto"));
     }
 
     private void hasProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new NotFoundException(Product.class.getName());
+            throw new NotFoundException("Produto");
         }
     }
 
@@ -70,28 +70,29 @@ public class ProductService {
 
     public void addStock(Long id, Integer quantity) {
         Product product = findById(id);
-        if (isQuantityValid(product.getStock(), quantity)) {
+        if (isStockValid(product.getStock(), quantity)) {
             product.setStock(product.getStock() + quantity);
             productRepository.save(product);
             return;
         }
-        throw new IllegalArgumentException("Quantidade inválida"); // TODO: Personalized Exception
+        throw new IllegalArgumentException("Estoque inválido!"); // TODO: Personalized Exception
     }
 
     public void removeStock(Long id, Integer quantity) {
         Product product = findById(id);
-        if (isQuantityValid(product.getStock(), quantity)) {
+        if (isStockValid(product.getStock(), quantity)) {
             product.setStock(product.getStock() - quantity);
             productRepository.save(product);
             return;
         }
-        throw new IllegalArgumentException("Quantidade inválida"); // TODO: Personalized Exception
+        throw new IllegalArgumentException("Estoque inválido!"); // TODO: Personalized Exception
     }
 
-    private boolean isQuantityValid(Integer stock, Integer quantity) {
-        return quantity <= stock;
+    private static boolean isStockValid(Integer stock, Integer quantity) {
+        return true; // TODO: Make some validation
     }
 
+    // TODO: Make it more clean
     private String createCode() {
         long id = productRepository.count() + 1;
         if (id < 10) {

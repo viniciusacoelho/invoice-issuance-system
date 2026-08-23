@@ -2,10 +2,13 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 
 import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceUpdateDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidProductQuantityException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Invoice;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.InvoiceRepository;
+
+import jakarta.validation.constraints.Positive;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,14 +24,14 @@ public class InvoiceService {
     @Autowired
     private ProductService productService;
 
-    public Invoice create(Long productId, Integer productQuantity) {
+    public Invoice create(Long productId, @Positive Integer productQuantity) {
         Product product = productService.findById(productId);
-        productService.removeStock(productId, productQuantity);
         Invoice invoice = Invoice.builder()
                 .sequentialNumber(calculateSequentialNumber())
                 .status(setStatusOpen())
                 .build();
         addProduct(invoice, product, productQuantity);
+        productService.removeStock(productId, productQuantity);
         invoiceRepository.save(invoice);
         return invoice;
     }
@@ -37,7 +40,7 @@ public class InvoiceService {
         if (isInvoice()) {
             return invoiceRepository.findAll();
         }
-        return null;
+        throw new NotFoundException("Notas Fiscais");
     }
 
     public Invoice update(Invoice invoice) {
@@ -52,12 +55,12 @@ public class InvoiceService {
 
     private Invoice findById(Long id) {
         return invoiceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(Invoice.class.getName()));
+                .orElseThrow(() -> new NotFoundException("Nota Fiscal"));
     }
 
     private void hasInvoice(Long id) {
         if (!invoiceRepository.existsById(id)) {
-            throw new NotFoundException(Invoice.class.getName());
+            throw new NotFoundException("Nota Fiscal");
         }
     }
 
@@ -65,17 +68,17 @@ public class InvoiceService {
         return invoiceRepository.count() > 0;
     }
 
-    public void addProduct(Invoice invoice, Product product, Integer productQuantity) {
-        if (productQuantity > 0) {
-            invoice.setProductQuantity(invoice.getProductQuantity() + productQuantity);
-            invoice.getProducts().add(product);
-        }
+    // TODO: Add, for exemple, 2x when adding a product twice, for don't show the same product twice
+    public static void addProduct(Invoice invoice, Product product, Integer productQuantity) {
+        isProductQuantityValid(productQuantity, product.getStock());
+        invoice.setProductQuantity(invoice.getProductQuantity() + productQuantity);
+        invoice.getProducts().add(product);
     }
 
     public Invoice addProduct(Long invoiceId, Long productId, Integer productQuantity) {
         Invoice invoice = findById(invoiceId);
         Product product = productService.findById(productId);
-        addProductQuantity(invoice, productQuantity);
+        addProductQuantity(invoice, productQuantity, product.getStock());
         productService.removeStock(productId, productQuantity);
         invoice.getProducts().add(product);
         return invoice;
@@ -84,25 +87,25 @@ public class InvoiceService {
     public Invoice removeProduct(Long invoiceId, Long productId, Integer productQuantity) {
         Invoice invoice = findById(invoiceId);
         Product product = productService.findById(productId);
-        removeProductQuantity(invoice, productQuantity);
+        removeProductQuantity(invoice, productQuantity, product.getStock());
         productService.addStock(productId, productQuantity);
         invoice.getProducts().remove(product);
         return invoice;
     }
 
-    private void addProductQuantity(Invoice invoice, Integer productQuantity) {
-        isProductQuantityValid(invoice, productQuantity);
+    private static void addProductQuantity(Invoice invoice, Integer productQuantity, Integer productStock) {
+        isProductQuantityValid(productQuantity, productStock);
         invoice.setProductQuantity(invoice.getProductQuantity() + productQuantity);
     }
 
-    private void removeProductQuantity(Invoice invoice, Integer productQuantity) {
-        isProductQuantityValid(invoice, productQuantity);
+    private static void removeProductQuantity(Invoice invoice, Integer productQuantity, Integer productStock) {
+        isProductQuantityValid(productQuantity, productStock);
         invoice.setProductQuantity(invoice.getProductQuantity() - productQuantity);
     }
 
-    private void isProductQuantityValid(Invoice invoice, Integer productQuantity) {
-        if (productQuantity > invoice.getProductQuantity()) {
-            throw new IllegalArgumentException("Quantidade de produtos inválida!");
+    private static void isProductQuantityValid(Integer productQuantity, Integer productStock) {
+        if (productQuantity > productStock) {
+            throw new IllegalArgumentException("Quantidade de produtos inválida!"); // TODO: Personalized Exception
         }
     }
 
