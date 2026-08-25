@@ -38,7 +38,7 @@ public class Invoice {
     @Enumerated(value = EnumType.STRING)
     private Status status;
 
-    private Integer productQuantity;
+    private int productQuantity;
 
 // TODO: Check why it isn't working (it is adding the product_id to the products, not to the invoices).
 //    @OneToMany(cascade = CascadeType.ALL)

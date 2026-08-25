@@ -23,6 +23,7 @@ public class InvoiceService {
     private ProductService productService;
 
     public Invoice create(Long productId, @Positive Integer productQuantity) {
+        productService.hasProducts();
         Product product = productService.findById(productId);
         Invoice invoice = Invoice.builder()
                 .sequentialNumber(calculateSequentialNumber())
@@ -51,7 +52,18 @@ public class InvoiceService {
         return null;
     }
 
-    private Invoice findById(Long id) {
+    public Invoice issue(Long id) {
+        Invoice invoice = findById(id);
+        if (invoice.getStatus() == Invoice.Status.OPEN) {
+            invoice.setStatus(setStatusClosed());
+            update(invoice);
+            return invoice;
+        }
+        throw new BadRequestException("Status");
+    }
+
+//    private Invoice findById(Long id) {
+    public Invoice findById(Long id) {
         return invoiceRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Nota fiscal"));
     }
@@ -62,7 +74,8 @@ public class InvoiceService {
         }
     }
 
-    private boolean isInvoice() {
+//    private boolean isInvoice() {
+    public boolean isInvoice() {
         return invoiceRepository.count() > 0;
     }
 
@@ -111,8 +124,13 @@ public class InvoiceService {
         return invoiceRepository.count() + 1;
     }
 
-    private static Invoice.Status setStatusOpen() {
+//    private static Invoice.Status setStatusOpen() {
+    public static Invoice.Status setStatusOpen() {
         return Invoice.Status.OPEN;
+    }
+
+    private static Invoice.Status setStatusClosed() {
+        return Invoice.Status.CLOSED;
     }
 
 }

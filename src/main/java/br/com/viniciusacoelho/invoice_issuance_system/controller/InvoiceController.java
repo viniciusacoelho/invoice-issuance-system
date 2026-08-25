@@ -59,4 +59,9 @@ public class InvoiceController {
         return ResponseEntity.ok(invoiceService.delete(id));
     }
 
+    @GetMapping("/find/{id}/issue")
+    public ResponseEntity<Invoice> issue(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(invoiceService.issue(id));
+    }
+
 }
