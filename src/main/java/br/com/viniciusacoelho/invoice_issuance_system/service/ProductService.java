@@ -55,7 +55,10 @@ public class ProductService {
     }
 
     public List<Product> findByName(String name) {
-        return productRepository.findByName(name);
+        if (!productRepository.findByNameContaining(name).isEmpty()) {
+            return productRepository.findByNameContaining(name);
+        }
+        throw new NotFoundException("Produto");
     }
 
     public Product findById(Long id) {
@@ -67,6 +70,12 @@ public class ProductService {
     public void hasProduct(Long id) {
         if (!productRepository.existsById(id)) {
             throw new NotFoundException("Produto");
+        }
+    }
+
+    public void hasProducts() {
+        if (productRepository.count() == 0) {
+            throw new NotFoundException("Produtos");
         }
     }
 
