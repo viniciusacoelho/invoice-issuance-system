@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import java.util.List;
 
 @RestController
@@ -51,6 +50,11 @@ public class ProductController {
     @GetMapping("/find/{name}")
     public ResponseEntity<List<Product>> findByName(@PathVariable("name") String name) {
         return ResponseEntity.ok(productService.findByName(name));
+    }
+
+    @GetMapping("/find/category/{category}")
+    public ResponseEntity<List<Product>> filterByCategory(String category) {
+        return ResponseEntity.ok(productService.findByCategory(category));
     }
 
 }

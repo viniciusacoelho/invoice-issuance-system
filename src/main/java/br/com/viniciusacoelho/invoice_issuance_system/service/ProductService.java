@@ -61,6 +61,13 @@ public class ProductService {
         throw new NotFoundException("Produto");
     }
 
+    public List<Product> findByCategory(String category) {
+        if (!productRepository.findByCategory(category).isEmpty()) {
+            return productRepository.findByCategory(category);
+        }
+        throw new NotFoundException("Produto");
+    }
+
     public Product findById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Produto"));
