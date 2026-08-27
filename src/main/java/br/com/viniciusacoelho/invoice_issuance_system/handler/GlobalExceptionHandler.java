@@ -3,38 +3,46 @@ package br.com.viniciusacoelho.invoice_issuance_system.handler;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGeneral(Exception ex, WebRequest request) {
-        return handle(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
+    public ResponseEntity<Object> handleGeneral(Exception e, WebRequest request) {
+        return handle(e, HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
-        return handle(ex, HttpStatus.NOT_FOUND, request);
+    public ResponseEntity<Object> handleNotFoundException(NotFoundException e, WebRequest request) {
+        return handle(e, HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<Object> handleInvalidProductQuantityException(BadRequestException ex, WebRequest request) {
-        return handle(ex, HttpStatus.BAD_REQUEST, request);
+    public ResponseEntity<Object> handleBadRequestException(BadRequestException e, WebRequest request) {
+        return handle(e, HttpStatus.BAD_REQUEST, request);
     }
 
-    private ResponseEntity<Object> handle(Exception ex, HttpStatus httpStatus, WebRequest request) {
-        ResponseError body = responseError(ex.getMessage(), httpStatus, request.getDescription(false).replace("uri=", ""));
-        return handleExceptionInternal(ex, body, headers(), httpStatus, request);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, WebRequest request) {
+        Map<String, String> errors = new HashMap<>();
+        e.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    private ResponseEntity<Object> handle(Exception e, HttpStatus status, WebRequest request) {
+        ResponseError errors = responseError(e.getMessage(), status, request.getDescription(false).replace("uri=", ""));
+        return ResponseEntity.status(status).body(errors);
     }
 
     private ResponseError responseError(String message, HttpStatus status, String path) {
@@ -45,12 +53,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .error(message)
                 .path(path)
                 .build();
-    }
-
-    private HttpHeaders headers() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return headers;
     }
 
 }
