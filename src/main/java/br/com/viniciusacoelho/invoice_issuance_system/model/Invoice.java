@@ -15,7 +15,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,13 +41,13 @@ public class Invoice {
     private Status status;
 
     @Column(nullable = false)
-    private int productQuantity;
+    private int productQuantity; // TODO: Show the sum of productQuantity in InvoiceItem
 
 // TODO: Check why it isn't working (it is adding the product_id to the products, not to the invoices).
 //    @OneToMany(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "product_id")
     @Column(nullable = false)
     @ManyToMany
-    private final List<Product> products = new ArrayList<>();
+    private List<InvoiceItem> invoiceItems;
 
 }
