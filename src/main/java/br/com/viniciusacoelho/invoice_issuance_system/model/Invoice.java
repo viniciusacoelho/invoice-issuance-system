@@ -1,5 +1,6 @@
 package br.com.viniciusacoelho.invoice_issuance_system.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
@@ -29,20 +30,24 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private long sequentialNumber;
 
     public enum Status {
         OPEN, CLOSED
     }
 
+    @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Status status;
 
+    @Column(nullable = false)
     private int productQuantity;
 
 // TODO: Check why it isn't working (it is adding the product_id to the products, not to the invoices).
 //    @OneToMany(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "product_id")
+    @Column(nullable = false)
     @ManyToMany
     private final List<Product> products = new ArrayList<>();
 
