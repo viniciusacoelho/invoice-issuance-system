@@ -31,10 +31,8 @@ public class ProductService {
     }
 
     public List<Product> read() {
-        if (isProduct()) {
-            return productRepository.findAll();
-        }
-        throw new NotFoundException("Produtos");
+        hasProducts();
+        return productRepository.findAll();
     }
 
     // TODO: Check why it is saving with null values.
@@ -49,45 +47,26 @@ public class ProductService {
     }
 
     public Product delete(Long id) {
-        hasProduct(id);
+        hasProductById(id);
         productRepository.deleteById(id);
         return null;
     }
 
     public List<Product> findByName(String name) {
-        if (!productRepository.findByNameContaining(name).isEmpty()) {
-            return productRepository.findByNameContaining(name);
-        }
-        throw new NotFoundException("Produto");
+        List<Product> products = productRepository.findByNameContaining(name);
+        hasProducts(products);
+        return products;
     }
 
     public List<Product> findByCategory(String category) {
-        if (!productRepository.findByCategory(category).isEmpty()) {
-            return productRepository.findByCategory(category);
-        }
-        throw new NotFoundException("Produto");
+        List<Product> products = productRepository.findByNameContaining(category);
+        hasProducts(products);
+        return products;
     }
 
     public Product findById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Produto"));
-    }
-
-//    private void hasProduct(Long id) {
-    public void hasProduct(Long id) {
-        if (!productRepository.existsById(id)) {
-            throw new NotFoundException("Produto");
-        }
-    }
-
-    public void hasProducts() {
-        if (productRepository.count() == 0) {
-            throw new NotFoundException("Produtos");
-        }
-    }
-
-    private boolean isProduct() {
-        return productRepository.count() > 0;
     }
 
     public void addStock(Long id, Integer quantity) {
@@ -108,6 +87,24 @@ public class ProductService {
             return;
         }
         throw new BadRequestException("Estoque");
+    }
+
+    public void hasProducts() {
+        if (productRepository.count() == 0) {
+            throw new NotFoundException("Produtos");
+        }
+    }
+
+    private void hasProducts(List<Product> products) {
+        if (products.isEmpty()) {
+            throw new NotFoundException("Produto");
+        }
+    }
+
+    private void hasProductById(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new NotFoundException("Produto");
+        }
     }
 
     private static boolean isStockValid(Integer stock, Integer quantity) {

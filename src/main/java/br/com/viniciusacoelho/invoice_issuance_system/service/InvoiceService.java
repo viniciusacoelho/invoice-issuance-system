@@ -27,7 +27,7 @@ public class InvoiceService {
         Product product = productService.findById(productId);
         Invoice invoice = Invoice.builder()
                 .sequentialNumber(calculateSequentialNumber())
-                .status(setStatusOpen())
+                .status(Invoice.Status.OPEN)
                 .build();
         addProduct(invoice, product, productQuantity);
         productService.removeStock(productId, productQuantity);
@@ -49,41 +49,17 @@ public class InvoiceService {
     public Invoice delete(Long id) {
         hasInvoice(id);
         invoiceRepository.deleteById(id);
-        return null;
+        return null; //  TODO: Return another thing
     }
 
     public Invoice issue(Long id) {
         Invoice invoice = findById(id);
-        if (invoice.getStatus() == Invoice.Status.OPEN) {
-            invoice.setStatus(setStatusClosed());
+        if (isStatusOpen(invoice.getStatus())) {
+            setStatusClosed(invoice);
             update(invoice);
             return invoice;
         }
         throw new BadRequestException("Status");
-    }
-
-//    private Invoice findById(Long id) {
-    public Invoice findById(Long id) {
-        return invoiceRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Nota fiscal"));
-    }
-
-    private void hasInvoice(Long id) {
-        if (!invoiceRepository.existsById(id)) {
-            throw new NotFoundException("Nota Fiscal");
-        }
-    }
-
-//    private boolean isInvoice() {
-    public boolean isInvoice() {
-        return invoiceRepository.count() > 0;
-    }
-
-    // TODO: Add, for exemple, 2x when adding a product twice, for don't show the same product twice
-    public static void addProduct(Invoice invoice, Product product, Integer productQuantity) {
-        isProductQuantityValid(productQuantity, product.getStock());
-        invoice.setProductQuantity(invoice.getProductQuantity() + productQuantity);
-        invoice.getProducts().add(product);
     }
 
     public Invoice addProduct(Long invoiceId, Long productId, Integer productQuantity) {
@@ -104,6 +80,28 @@ public class InvoiceService {
         return invoice;
     }
 
+    private Invoice findById(Long id) {
+        return invoiceRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Nota fiscal"));
+    }
+
+    private void hasInvoice(Long id) {
+        if (!invoiceRepository.existsById(id)) {
+            throw new NotFoundException("Nota fiscal");
+        }
+    }
+
+    private boolean isInvoice() {
+        return invoiceRepository.count() > 0;
+    }
+
+    // TODO: Add, for exemple, 2x when adding a product twice, for don't show the same product twice
+    private void addProduct(Invoice invoice, Product product, Integer productQuantity) {
+        isProductQuantityValid(productQuantity, product.getStock());
+        invoice.setProductQuantity(invoice.getProductQuantity() + productQuantity);
+        invoice.getProducts().add(product);
+    }
+
     private static void addProductQuantity(Invoice invoice, Integer productQuantity, Integer productStock) {
         isProductQuantityValid(productQuantity, productStock);
         invoice.setProductQuantity(invoice.getProductQuantity() + productQuantity);
@@ -120,17 +118,16 @@ public class InvoiceService {
         }
     }
 
+    private static void setStatusClosed(Invoice invoice) {
+        invoice.setStatus(Invoice.Status.CLOSED);
+    }
+
+    private static boolean isStatusOpen(Invoice.Status status) {
+        return status == Invoice.Status.OPEN;
+    }
+
     private long calculateSequentialNumber() {
         return invoiceRepository.count() + 1;
-    }
-
-//    private static Invoice.Status setStatusOpen() {
-    public static Invoice.Status setStatusOpen() {
-        return Invoice.Status.OPEN;
-    }
-
-    private static Invoice.Status setStatusClosed() {
-        return Invoice.Status.CLOSED;
     }
 
 }
