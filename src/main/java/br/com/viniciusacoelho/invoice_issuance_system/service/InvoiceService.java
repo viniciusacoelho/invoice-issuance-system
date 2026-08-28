@@ -5,13 +5,11 @@ import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestExcept
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Invoice;
 import br.com.viniciusacoelho.invoice_issuance_system.model.InvoiceItem;
-import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.InvoiceRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,9 +17,6 @@ public class InvoiceService {
 
     @Autowired
     private InvoiceRepository invoiceRepository;
-
-    @Autowired
-    private ProductService productService;
 
     @Autowired
     private InvoiceItemService invoiceItemService;
@@ -39,7 +34,7 @@ public class InvoiceService {
         if (isInvoice()) {
             return invoiceRepository.findAll();
         }
-        throw new NotFoundException("Notas Fiscais");
+        throw new NotFoundException("Notas fiscais");
     }
 
     public Invoice update(Invoice invoice) {
@@ -62,25 +57,24 @@ public class InvoiceService {
         throw new BadRequestException("Status");
     }
 
-// TODO: Add multiple products to he update
-//    public Invoice addProduct(Long invoiceId, Long productId, Integer productQuantity) {
-//        Invoice invoice = findById(invoiceId);
-//        Product product = productService.findById(productId);
-//        addProductQuantity(invoice, productQuantity, product.getStock());
-//        productService.removeStock(productId, productQuantity);
-//        invoice.getProducts().add(product);
-//        return invoice;
-//    }
-//
-// TODO: Remove multiple products to the update
-//    public Invoice removeProduct(Long invoiceId, Long productId, Integer productQuantity) {
-//        Invoice invoice = findById(invoiceId);
-//        Product product = productService.findById(productId);
-//        removeProductQuantity(invoice, productQuantity, product.getStock());
-//        productService.addStock(productId, productQuantity);
-//        invoice.getProducts().remove(product);
-//        return invoice;
-//    }
+    public Invoice addProduct(Long invoiceId, InvoiceDTO invoiceDTO) {
+        Invoice invoice = findById(invoiceId);
+        List<InvoiceItem> invoiceItems = invoiceItemService.create(invoiceDTO);
+        invoice.getInvoiceItems().addAll(invoiceItems);
+        return update(invoice);
+    }
+
+    public Invoice removeProduct(Long invoiceId, InvoiceDTO invoiceDTO) {
+        Invoice invoice = findById(invoiceId);
+        for (int i = 0; i < invoice.getInvoiceItems().size(); i++) {
+            Long productIdDTO = invoiceDTO.invoiceItemsDTO().get(i).productId();
+            int productQuantityDTO = invoiceDTO.invoiceItemsDTO().get(i).productQuantity();
+            if (productIdDTO.equals(invoice.getInvoiceItems().get(i).getProductId())) {
+                invoiceItemService.remove(productIdDTO, productQuantityDTO, invoice.getInvoiceItems(), invoice.getInvoiceItems().get(i));
+            }
+        }
+        return update(invoice);
+    }
 
     private Invoice findById(Long id) {
         return invoiceRepository.findById(id)

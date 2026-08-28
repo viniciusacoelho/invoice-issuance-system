@@ -7,13 +7,13 @@ import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.InvoiceItemRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
-public class    InvoiceItemService {
+@Service
+public class InvoiceItemService {
 
     @Autowired
     private InvoiceItemRepository invoiceItemRepository;
@@ -22,52 +22,40 @@ public class    InvoiceItemService {
     private ProductService productService;
 
     public List<InvoiceItem> create(InvoiceDTO invoiceDTO) {
-// TODO: Try if have a way to do it with stream()
-//        productService.hasProducts();
-//        invoiceDTO.invoiceItemsDTO().stream()
-//                .map(InvoiceItemDTO::productId);
         List<InvoiceItem> invoiceItems = new ArrayList<>();
         for (int i = 0; i < invoiceDTO.invoiceItemsDTO().size(); i++) {
-            int productQuantity = invoiceDTO.invoiceItemsDTO().get(i).productQuantity();
             Long productId = invoiceDTO.invoiceItemsDTO().get(i).productId();
+            int productQuantity = invoiceDTO.invoiceItemsDTO().get(i).productQuantity();
             InvoiceItem invoiceItem = InvoiceItem.builder()
                     .productId(productId)
                     .productQuantity(productQuantity)
                     .build();
-            addProduct(productId, productQuantity, invoiceItems, invoiceItem);
+            add(productId, productQuantity, invoiceItems, invoiceItem);
         }
         return invoiceItemRepository.saveAll(invoiceItems);
     }
 
-    public void addProduct(Long productId, Integer productQuantity, List<InvoiceItem> invoiceItems, InvoiceItem invoiceItem) {
+    public void add(Long productId, Integer productQuantity, List<InvoiceItem> invoiceItems, InvoiceItem invoiceItem) {
         Product product = productService.findById(productId);
         isProductQuantityValid(productQuantity, product.getStock());
         productService.removeStock(productId, productQuantity);
         invoiceItems.add(invoiceItem);
     }
 
-    private static void isProductQuantityValid(Integer productQuantity, Integer productStock) {
-        if (productQuantity > productStock) {
-            throw new BadRequestException("Quantidade de produtos");
-        }
+    public void remove(Long productId, Integer productQuantity, List<InvoiceItem> invoiceItems, InvoiceItem invoiceItem) {
+        productService.addStock(productId, productQuantity);
+        invoiceItems.remove(invoiceItem);
+        delete(productId);
     }
 
-    public List<InvoiceItem> save(InvoiceDTO invoiceDTO) {
-// TODO: Try if have a way to do it with stream()
-//        productService.hasProducts();
-//        invoiceDTO.invoiceItemsDTO().stream()
-//                .map(InvoiceItemDTO::productId);
-        List<InvoiceItem> invoiceItems = new ArrayList<>();
-        for (int i = 0; i < invoiceDTO.invoiceItemsDTO().size(); i++) {
-            int productQuantity = invoiceDTO.invoiceItemsDTO().get(i).productQuantity();
-            Long productId = invoiceDTO.invoiceItemsDTO().get(i).productId();
-            InvoiceItem invoiceItem = InvoiceItem.builder()
-                    .productId(productId)
-                    .productQuantity(productQuantity)
-                    .build();
-            addProduct(productId, productQuantity, invoiceItems, invoiceItem);
+    private void delete(Long id) {
+        invoiceItemRepository.deleteById(id);
+    }
+
+    private static void isProductQuantityValid(Integer productQuantity, Integer productStock) {
+        if (productQuantity > productStock) {
+            throw new BadRequestException("Quantidade do produto");
         }
-        return invoiceItemRepository.saveAll(invoiceItems);
     }
 
 }
