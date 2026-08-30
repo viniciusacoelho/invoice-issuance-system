@@ -27,14 +27,13 @@ public class InvoiceService {
                 .status(Invoice.Status.OPEN)
                 .invoiceItems(invoiceItemService.create(invoiceDTO))
                 .build();
+        addProductQuantity(invoice, invoice.getInvoiceItems());
         return invoiceRepository.save(invoice);
     }
 
     public List<Invoice> read() {
-        if (isInvoice()) {
-            return invoiceRepository.findAll();
-        }
-        throw new NotFoundException("Notas fiscais");
+        hasInvoices();
+        return invoiceRepository.findAll();
     }
 
     public Invoice update(Invoice invoice) {
@@ -60,6 +59,7 @@ public class InvoiceService {
     public Invoice addProduct(Long invoiceId, InvoiceDTO invoiceDTO) {
         Invoice invoice = findById(invoiceId);
         List<InvoiceItem> invoiceItems = invoiceItemService.create(invoiceDTO);
+        addProductQuantity(invoice, invoiceItems);
         invoice.getInvoiceItems().addAll(invoiceItems);
         return update(invoice);
     }
@@ -70,6 +70,7 @@ public class InvoiceService {
             Long productIdDTO = invoiceDTO.invoiceItemsDTO().get(i).productId();
             int productQuantityDTO = invoiceDTO.invoiceItemsDTO().get(i).productQuantity();
             if (productIdDTO.equals(invoice.getInvoiceItems().get(i).getProductId())) {
+                removeProductQuantity(invoice, productQuantityDTO);
                 invoiceItemService.remove(productIdDTO, productQuantityDTO, invoice.getInvoiceItems(), invoice.getInvoiceItems().get(i));
             }
         }
@@ -87,24 +88,20 @@ public class InvoiceService {
         }
     }
 
-    private boolean isInvoice() {
-        return invoiceRepository.count() > 0;
-    }
-
-    private static void addProductQuantity(Invoice invoice, Integer productQuantity, Integer productStock) {
-        isProductQuantityValid(productQuantity, productStock);
-        invoice.setProductQuantity(invoice.getProductQuantity() + productQuantity);
-    }
-
-    private static void removeProductQuantity(Invoice invoice, Integer productQuantity, Integer productStock) {
-        isProductQuantityValid(productQuantity, productStock);
-        invoice.setProductQuantity(invoice.getProductQuantity() - productQuantity);
-    }
-
-    private static void isProductQuantityValid(Integer productQuantity, Integer productStock) {
-        if (productQuantity > productStock) {
-            throw new BadRequestException("Quantidade de produtos");
+    private void hasInvoices() {
+        if (invoiceRepository.count() == 0) {
+            throw new NotFoundException("Notas fiscais");
         }
+    }
+
+    // TODO: Remove duplicated code (I don't think so, because it will be the sum of the quantities)
+    private void addProductQuantity(Invoice invoice, List<InvoiceItem> invoiceItems) {
+        int productQuantity = calculateProductQuantity(invoiceItems);
+        invoice.setTotalProductQuantity(invoice.getTotalProductQuantity() + productQuantity);
+    }
+
+    private void removeProductQuantity(Invoice invoice, int productQuantity) {
+        invoice.setTotalProductQuantity(invoice.getTotalProductQuantity() - productQuantity);
     }
 
     private static void setStatusClosed(Invoice invoice) {
@@ -117,6 +114,11 @@ public class InvoiceService {
 
     private long calculateSequentialNumber() {
         return invoiceRepository.count() + 1;
+    }
+
+    private int calculateProductQuantity(List<InvoiceItem> invoiceItems) {
+        return invoiceItems.stream()
+                .mapToInt(InvoiceItem::getProductQuantity).sum();
     }
 
 }
