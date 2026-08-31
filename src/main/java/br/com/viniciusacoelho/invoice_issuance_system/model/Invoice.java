@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -41,8 +42,14 @@ public class Invoice {
     private Status status;
 
     @Column(nullable = false)
+    private BigDecimal totalPrice;
+
+    @Column(nullable = false)
     private int totalProductQuantity;
 
+// TODO: Check why it isn't working (it is adding the product_id to the products, not to the invoices).
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "product_id")
     @Column(nullable = false)
     @ManyToMany
     private List<InvoiceItem> invoiceItems;
