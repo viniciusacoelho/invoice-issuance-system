@@ -1,11 +1,10 @@
-package br.com.viniciusacoelho.invoice_issuance_system;
+package br.com.viniciusacoelho.invoice_issuance_system.service;
 
 import br.com.viniciusacoelho.invoice_issuance_system.dto.ProductDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.ProductUpdateDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.ProductRepository;
-import br.com.viniciusacoelho.invoice_issuance_system.service.ProductService;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
