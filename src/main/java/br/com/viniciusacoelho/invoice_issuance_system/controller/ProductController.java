@@ -27,33 +27,33 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Product> create(@Valid @RequestBody ProductDTO productDTO) {
         return ResponseEntity.ok(productService.create(productDTO));
     }
 
-    @GetMapping("/read")
+    @GetMapping
     public ResponseEntity<List<Product>> read() {
         return ResponseEntity.ok(productService.read());
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Product> update(@PathVariable("id") Long id, @Valid @RequestBody ProductUpdateDTO productUpdateDTO) {
         return ResponseEntity.ok(productService.update(id, productUpdateDTO));
     }
 
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Product> delete(@PathVariable("id") Long id) {
         return ResponseEntity.ok(productService.delete(id));
     }
 
-    @GetMapping("/find/{name}")
+    @GetMapping("/{name}")
     public ResponseEntity<List<Product>> findByName(@PathVariable("name") String name) {
         return ResponseEntity.ok(productService.findByName(name));
     }
 
-    @GetMapping("/find/category/{category}")
-    public ResponseEntity<List<Product>> filterByCategory(String category) {
+    @GetMapping("/filter/{category}")
+    public ResponseEntity<List<Product>> filterByCategory(@PathVariable("category") String category) {
         return ResponseEntity.ok(productService.findByCategory(category));
     }
 

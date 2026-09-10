@@ -26,12 +26,12 @@ public class InvoiceController {
     @Autowired
     private InvoiceService invoiceService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<Invoice> create(@Valid @RequestBody InvoiceDTO invoiceDTO) {
         return ResponseEntity.ok(invoiceService.create(invoiceDTO));
     }
 
-    @GetMapping("/read")
+    @GetMapping
     public ResponseEntity<List<Invoice>> read() {
         return ResponseEntity.ok(invoiceService.read());
     }
@@ -41,22 +41,22 @@ public class InvoiceController {
 //        return ResponseEntity.ok(invoiceService.update(id, invoiceUpdateDTO));
 //    }
 
-    @PutMapping("/update/{id}/add")
+    @PutMapping("/{id}/add")
     public ResponseEntity<Invoice> addProduct(@PathVariable("id") Long id, @Valid @RequestBody InvoiceDTO invoiceDTO) {
         return ResponseEntity.ok(invoiceService.addProduct(id, invoiceDTO));
     }
 
-    @PutMapping("/update/{id}/remove")
+    @PutMapping("/{id}/remove")
     public ResponseEntity<Invoice> removeProduct(@PathVariable("id") Long id, @Valid @RequestBody InvoiceDTO invoiceDTO) {
         return ResponseEntity.ok(invoiceService.removeProduct(id, invoiceDTO));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Invoice> delete(@PathVariable("id") Long id) {
         return ResponseEntity.ok(invoiceService.delete(id));
     }
 
-    @GetMapping("/find/{id}/issue")
+    @GetMapping("/{id}/issue")
     public ResponseEntity<Invoice> issue(@PathVariable("id") Long id) {
         return ResponseEntity.ok(invoiceService.issue(id));
     }
