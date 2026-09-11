@@ -59,7 +59,7 @@ public class ProductService {
     }
 
     public List<Product> findByCategory(String category) {
-        List<Product> products = productRepository.findByNameContaining(category);
+        List<Product> products = productRepository.findByCategory(category);
         hasProducts(products);
         return products;
     }
@@ -71,7 +71,7 @@ public class ProductService {
 
     public void addStock(Long id, Integer quantity) {
         Product product = findById(id);
-        if (isStockValid(product.getStock(), quantity)) {
+        if (isStockValid(product.getStock())) {
             product.setStock(product.getStock() + quantity);
             productRepository.save(product);
             return;
@@ -81,7 +81,7 @@ public class ProductService {
 
     public void removeStock(Long id, Integer quantity) {
         Product product = findById(id);
-        if (isStockValid(product.getStock(), quantity)) {
+        if (isStockValid(product.getStock())) {
             product.setStock(product.getStock() - quantity);
             productRepository.save(product);
             return;
@@ -107,8 +107,8 @@ public class ProductService {
         }
     }
 
-    private static boolean isStockValid(Integer stock, Integer quantity) {
-        return true; // TODO: Make some validation
+    private static boolean isStockValid(Integer stock) {
+        return stock > 0;
     }
 
     // TODO: Make it more clean
