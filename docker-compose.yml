@@ -3,48 +3,13 @@ services:
     image: postgres:18.6
     container_name: invoice-issuance-system-postgres
     environment:
-      POSTGRES_DB: invoice_issuance_system_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: ${KEY_POSTGRES_DB}
+      POSTGRES_USER: ${KEY_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${KEY_POSTGRES_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${KEY_POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
 
 volumes:
   postgres_data:
-
-## É como se fosse a receita da infraestrutura
-#services: # construir as receitas
-#  postgres: # é o nome da receita
-#    image: postgres:18-alpine # da onde vai baixar o postgres, é um pacote pronto com tudo que o banco vai precisar para rodar, como se fosse o download. o alpine é a distribuição do Linux que vai utilizar
-#    container_name: invoice-issuance-system-postgres # é o nome da receita
-#    environment: # são as variáveis de ambiente que o banco de dados precisa para rodar, são as credenciais que está definindo que ele vai utilizar quando subir o banco de dados
-#      POSTGRES_DB: invoice_issuance_system_db # configurar o nome do banco de dados
-#      POSTGRES_USER: postgres # o nome do usuário do banco de dados
-#      POSTGRES_PASSWORD: 1234 # a senha do banco de dados
-#      PGDATA: /var/lib/postgresql/data/pgdata # e o lugar que ele vai armazenar os dados
-#    ports:
-#      - "5432:5432" # é a porta do postgres padrão, está criando um túnel da porta 5432 do nosso computador para a porta 5432 que o postgres está ouvindo dentro do docker
-#      # 'porta local' PC (host) : 'a porta que o postgres vai ouvir dentro do docker' Postgres (docker)
-#    volumes: # onde vai acontecer a persistência dos dados
-#      - postgres_data:/var/lib/postgresql/data # o postgresdata vai garantir que os dados fiquem salvos no HD, e não apenas dentro da memória do docker e o caminho que vai salvar dentro do container
-#    networks: # como o docker é como se fosse um computador a parte dentro do nosso computador, ele vai ter uma network própria
-#      - invoice-issuance-system-network
-#    healthcheck: # vai garantir que o container subiu e que o postgres está funcionando
-#      test: [ "CMD-SHELL", "pg_isready -U postgres -d 1234" ] # se o docker não subiu o container, ele vai ficar testando sempre em um intervalo de 10 em 10 segundos para ver se o container subiu
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
-#
-#volumes: # como, nele, usou o volumes e o networks, redeclarar eles aqui na raiz
-#  postgres_data:
-#    driver: local # o driver que vai utilizar para o volume
-#
-#networks:
-#  invoice-issuance-system-network:
-#    driver: bridge # o driver que vai utilizar para o network
-#
-## docker compose up -d -> vai subir a docker compose e o -d é para não travar o console
-#
-## docker compose stop -> parar os containers, não vai conseguir subir a aplicação porque o banco de dados que está dentro do docker não está rodando
