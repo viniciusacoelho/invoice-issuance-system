@@ -6,6 +6,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -17,8 +19,9 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/home", "/login", "/swagger-ui/index.html").permitAll()
-//                        .requestMatchers("/swagger-ui/index.html").permitAll()
+                        .requestMatchers("/", "/home", "/swagger-ui/index.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers(HttpMethod.POST, "/logout").hasAnyRole("ADMIN", "USER")
 
                         .requestMatchers(HttpMethod.POST, "/invoices").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/invoices").hasRole("ADMIN")
@@ -40,6 +43,11 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 );
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }

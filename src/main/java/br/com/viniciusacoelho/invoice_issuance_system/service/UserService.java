@@ -8,6 +8,7 @@ import br.com.viniciusacoelho.invoice_issuance_system.model.User;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     public User create(UserDTO userDTO) {
         existsFields(userDTO.email(), userDTO.username(), userDTO.cpf());
         User user = User.builder()
@@ -28,8 +32,9 @@ public class UserService {
                 .cpf(userDTO.cpf())
                 .cep(userDTO.cep())
                 .birthDate(userDTO.birthDate())
-                .password(userDTO.password().trim())
+                .password(encrypt(userDTO.password().trim()))
                 .createdAt(LocalDateTime.now())
+                .role(User.Role.USER)
                 .build();
         return userRepository.save(user);
     }
@@ -118,6 +123,10 @@ public class UserService {
         existsByEmail(email);
         existsByUsername(username);
         existsByCpf(cpf);
+    }
+
+    private String encrypt(String password) {
+        return encoder.encode(password);
     }
 
 }
