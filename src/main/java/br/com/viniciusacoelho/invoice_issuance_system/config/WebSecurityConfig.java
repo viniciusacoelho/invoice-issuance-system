@@ -19,21 +19,18 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/home", "/swagger-ui/index.html").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/login").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/", "/home", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/logout").hasAnyRole("ADMIN", "USER")
-
                         .requestMatchers(HttpMethod.POST, "/invoices").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/invoices").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/invoices/{id}/issue").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.PUT, "/invoices/{id}/add", "/invoices/{id}/remove").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/invoices/{id}").hasRole("ADMIN")
-
                         .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/products", "/products/filter/name={name}", "/products/filter/category={category}").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/products/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/products/{id}").hasRole("ADMIN")
-
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/users/{username}", "/users/find/{name}").permitAll()
