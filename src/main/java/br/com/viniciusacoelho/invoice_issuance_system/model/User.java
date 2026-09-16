@@ -2,6 +2,8 @@ package br.com.viniciusacoelho.invoice_issuance_system.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,19 +38,27 @@ public class User {
     @Column(length = 50, unique = true, nullable = false)
     private String username;
 
-    @Column(length = 50, unique = true, nullable = false)
+    @Column(length = 14, unique = true, nullable = false)
     private String cpf;
 
     @Column(length = 9, nullable = false)
     private String cep;
 
-    @Column(length = 100, nullable = false)
+    @Column(nullable = false)
     private LocalDate birthDate;
 
     @Column(length = 100, nullable = false)
     private String password;
 
-    @Column(length = 100, nullable = false)
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    public enum Role {
+        ADMIN, USER
+    }
+
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
 }
