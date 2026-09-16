@@ -1,5 +1,6 @@
 package br.com.viniciusacoelho.invoice_issuance_system.handler;
 
+import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 
@@ -29,6 +30,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Object> handleBadRequestException(BadRequestException e, WebRequest request) {
+        return handle(e, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<Object> handleAlreadyExistsException(AlreadyExistsException e, WebRequest request) {
         return handle(e, HttpStatus.BAD_REQUEST, request);
     }
 
