@@ -58,8 +58,56 @@ public class ProductService {
         return products;
     }
 
-    public List<Product> findByCategory(String category) {
+    public List<Product> filterByCategory(String category) {
         List<Product> products = productRepository.findByCategory(category);
+        hasProducts(products);
+        return products;
+    }
+
+    public List<Product> filterNameByPriceAsc(String name) {
+        List<Product> products = productRepository.findByNameContainingOrderByPriceAsc(name);
+        hasProducts(products);
+        return products;
+    }
+
+    public List<Product> filterNameByPriceDesc(String name) {
+        List<Product> products = productRepository.findByNameContainingOrderByPriceDesc(name);
+        hasProducts(products);
+        return products;
+    }
+
+    public List<Product> filterNameByStockAsc(String name) {
+        List<Product> products = productRepository.findByNameContainingOrderByStockAsc(name);
+        hasProducts(products);
+        return products;
+    }
+
+    public List<Product> filterNameByStockDesc(String name) {
+        List<Product> products = productRepository.findByNameContainingOrderByStockDesc(name);
+        hasProducts(products);
+        return products;
+    }
+
+    public List<Product> filterCategoryByPriceAsc(String category) {
+        List<Product> products = productRepository.findByCategoryContainingOrderByPriceAsc(category);
+        hasProducts(products);
+        return products;
+    }
+
+    public List<Product> filterCategoryByPriceDesc(String category) {
+        List<Product> products = productRepository.findByCategoryContainingOrderByPriceDesc(category);
+        hasProducts(products);
+        return products;
+    }
+
+    public List<Product> filterCategoryByStockAsc(String category) {
+        List<Product> products = productRepository.findByCategoryContainingOrderByStockAsc(category);
+        hasProducts(products);
+        return products;
+    }
+
+    public List<Product> filterCategoryByStockDesc(String category) {
+        List<Product> products = productRepository.findByCategoryContainingOrderByStockDesc(category);
         hasProducts(products);
         return products;
     }

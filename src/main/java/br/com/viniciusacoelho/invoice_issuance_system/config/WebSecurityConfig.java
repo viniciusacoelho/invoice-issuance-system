@@ -28,7 +28,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/invoices/{id}/add", "/invoices/{id}/remove").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/invoices/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/products", "/products/filter/name={name}", "/products/filter/category={category}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products", "/products/filter/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/products/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/products/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()

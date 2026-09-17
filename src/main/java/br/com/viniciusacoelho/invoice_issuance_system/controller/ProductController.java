@@ -47,14 +47,54 @@ public class ProductController {
         return ResponseEntity.ok(productService.delete(id));
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<List<Product>> findByName(@PathVariable("name") String name) {
+    @GetMapping("/filter/name={name}")
+    public ResponseEntity<List<Product>> filterByName(@PathVariable("name") String name) {
         return ResponseEntity.ok(productService.findByName(name));
     }
 
-    @GetMapping("/filter/{category}")
+    @GetMapping("/filter/category={category}")
     public ResponseEntity<List<Product>> filterByCategory(@PathVariable("category") String category) {
-        return ResponseEntity.ok(productService.findByCategory(category));
+        return ResponseEntity.ok(productService.filterByCategory(category));
+    }
+
+    @GetMapping("/filter/name={name}/priceAsc")
+    public ResponseEntity<List<Product>> filterNameByPriceAsc(@PathVariable("name") String name) {
+        return ResponseEntity.ok(productService.filterNameByPriceAsc(name));
+    }
+
+    @GetMapping("/filter/name={name}/priceDesc")
+    public ResponseEntity<List<Product>> filterNameByPriceDesc(@PathVariable("name") String name) {
+        return ResponseEntity.ok(productService.filterNameByPriceDesc(name));
+    }
+
+    @GetMapping("/filter/name={name}/stockAsc")
+    public ResponseEntity<List<Product>> filterNameByStockAsc(@PathVariable("name") String name) {
+        return ResponseEntity.ok(productService.filterNameByStockAsc(name));
+    }
+
+    @GetMapping("/filter/name={name}/stockDesc")
+    public ResponseEntity<List<Product>> filterNameByStockDesc(@PathVariable("name") String name) {
+        return ResponseEntity.ok(productService.filterNameByStockDesc(name));
+    }
+
+    @GetMapping("/filter/category={category}/priceAsc")
+    public ResponseEntity<List<Product>> filterCategoryByPriceAsc(@PathVariable("category") String category) {
+        return ResponseEntity.ok(productService.filterCategoryByPriceAsc(category));
+    }
+
+    @GetMapping("/filter/category={category}/priceDesc")
+    public ResponseEntity<List<Product>> filterCategoryByPriceDesc(@PathVariable("category") String category) {
+        return ResponseEntity.ok(productService.filterCategoryByPriceDesc(category));
+    }
+
+    @GetMapping("/filter/category={category}/stockAsc")
+    public ResponseEntity<List<Product>> filterCategoryByStockAsc(@PathVariable("category") String category) {
+        return ResponseEntity.ok(productService.filterCategoryByStockAsc(category));
+    }
+
+    @GetMapping("/filter/category={category}/stockDesc")
+    public ResponseEntity<List<Product>> filterCategoryByStockDesc(@PathVariable("category") String category) {
+        return ResponseEntity.ok(productService.filterCategoryByStockDesc(category));
     }
 
 }
