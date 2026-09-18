@@ -3,6 +3,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.br.CPF;
@@ -26,6 +27,7 @@ public record UserUpdateDTO(
         @NotNull(message = "O CEP é obrigatório.")
         String cep,
 
+        @PastOrPresent(message = "A data deve estar no passado ou presente.")
         @JsonFormat(pattern = "dd/MM/yyyy")
         LocalDate birthDate,
 
