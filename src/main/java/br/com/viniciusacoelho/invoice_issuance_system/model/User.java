@@ -1,5 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -16,6 +18,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -50,15 +53,16 @@ public class User {
     @Column(length = 100, nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
     public enum Role {
         ADMIN, USER
     }
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private Role role;
+    private List<Role> roles;
+
+    @Column(nullable = false)
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime createdAt;
 
 }

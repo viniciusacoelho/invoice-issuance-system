@@ -1,18 +1,26 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
+import br.com.viniciusacoelho.invoice_issuance_system.config.JWTConfig;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.LoginDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.SessionDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.UserDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.UserUpdateDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidCredentialsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.User;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.UserRepository;
+import br.com.viniciusacoelho.invoice_issuance_system.security.JWTCreator;
+import br.com.viniciusacoelho.invoice_issuance_system.security.JWTObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -22,6 +30,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder encoder;
+
+    @Autowired
+    private JWTConfig jwtConfig;
 
     public User create(UserDTO userDTO) {
         existsFields(userDTO.email(), userDTO.username(), userDTO.cpf());
@@ -34,7 +45,8 @@ public class UserService {
                 .birthDate(userDTO.birthDate())
                 .password(encrypt(userDTO.password().trim()))
                 .createdAt(LocalDateTime.now())
-                .role(User.Role.USER)
+                .roles(List.of(User.Role.USER)) // TODO: Change the user roles in other part
+//                .roles(List.of(User.Role.ADMIN)) // TODO: Change the user roles in other part
                 .build();
         return userRepository.save(user);
     }
@@ -55,6 +67,8 @@ public class UserService {
         if (!userUpdateDTO.cpf().equalsIgnoreCase(user.getCpf())) {
             existsByCpf(userUpdateDTO.cpf());
         }
+//        User user = findByEmail(userUpdateDTO.email());
+//        User user = findByUsername(userUpdateDTO.username());
         user.setName(userUpdateDTO.name());
         user.setEmail(userUpdateDTO.email());
         user.setUsername(userUpdateDTO.username());
@@ -64,9 +78,29 @@ public class UserService {
     }
 
     public User delete(Long id) {
+//        User user = findById(id);
+//        User user = findByEmail(user.getEmail());
+//        User user = findByUsername(user.getUsername());
         hasUser(id);
         userRepository.deleteById(id);
         return null;
+    }
+
+    public SessionDTO login(LoginDTO loginDTO) {
+        Optional<User> user = findByUsernameLogin(loginDTO.getUsername());
+        if (user.isPresent() && isPasswordMatches(loginDTO.getPassword(), user.get().getPassword())) {
+            JWTObject jwtObject = JWTObject.builder()
+                    .subject(user.get().getUsername())
+                    .issuedAt(new Date(System.currentTimeMillis()))
+                    .expiration(new Date(System.currentTimeMillis() + jwtConfig.getExpiration()))
+                    .roles(convertRole(user.get().getRoles()))
+                    .build();
+            return SessionDTO.builder()
+                    .login(user.get().getUsername())
+                    .token(JWTCreator.create(jwtConfig.getPrefix(), jwtConfig.getKey(), jwtObject))
+                    .build();
+        }
+        throw new InvalidCredentialsException();
     }
 
     private void existsByEmail(String email) {
@@ -102,6 +136,10 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("Usuário"));
     }
 
+    public Optional<User> findByUsernameLogin(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public List<User> findByName(String name) {
         return userRepository.findByNameContaining(name)
                 .orElseThrow(() -> new NotFoundException("Usuário"));
@@ -127,6 +165,17 @@ public class UserService {
 
     private String encrypt(String password) {
         return encoder.encode(password);
+    }
+
+    private boolean isPasswordMatches(String loginPassword, String userPassword) {
+        return encoder.matches(loginPassword, userPassword);
+    }
+
+    private List<String> convertRole(List<User.Role> roles) {
+        return roles
+                .stream()
+                .map(Enum::name)
+                .toList();
     }
 
 }

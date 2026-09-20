@@ -1,15 +1,18 @@
 package br.com.viniciusacoelho.invoice_issuance_system.config;
 
+import br.com.viniciusacoelho.invoice_issuance_system.security.JWTFilter;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -17,10 +20,14 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
-        http
+        return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/home", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+//                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").hasRole("DEVELOPER")
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/logout").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.POST, "/invoices").hasRole("ADMIN")
@@ -33,15 +40,19 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/products/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/products/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/users").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/users/{username}", "/users/find/{name}").permitAll()
                         // TODO: The user can only update/delete using their own account.
                         .requestMatchers(HttpMethod.PUT, "/users/{id}").hasAnyRole("ADMIN", "USER")
                         .requestMatchers(HttpMethod.DELETE, "/users/{id}").hasAnyRole("ADMIN", "USER")
-                        .anyRequest().authenticated()
-                )
-                .httpBasic(Customizer.withDefaults());
-        return http.build();
+                        .anyRequest().authenticated())
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
+    @Bean
+    public JWTFilter jwtFilter() {
+        return new JWTFilter();
     }
 
     @Bean
