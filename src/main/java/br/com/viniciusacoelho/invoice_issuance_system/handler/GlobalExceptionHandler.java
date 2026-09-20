@@ -2,6 +2,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.handler;
 
 import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidCredentialsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +37,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<Object> handleAlreadyExistsException(AlreadyExistsException e, WebRequest request) {
+        return handle(e, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Object> handleInvalidCredentialsException(InvalidCredentialsException e, WebRequest request) {
         return handle(e, HttpStatus.BAD_REQUEST, request);
     }
 
