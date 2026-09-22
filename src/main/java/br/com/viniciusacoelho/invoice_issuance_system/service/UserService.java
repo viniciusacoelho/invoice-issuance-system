@@ -5,6 +5,7 @@ import br.com.viniciusacoelho.invoice_issuance_system.dto.LoginDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.SessionDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.UserDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.UserUpdateDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidCredentialsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
@@ -45,8 +46,8 @@ public class UserService {
                 .birthDate(userDTO.birthDate())
                 .password(encrypt(userDTO.password().trim()))
                 .createdAt(LocalDateTime.now())
-                .roles(List.of(User.Role.USER)) // TODO: Change the user roles in other part
-//                .roles(List.of(User.Role.ADMIN)) // TODO: Change the user roles in other part
+                .roles(List.of(Role.USER)) // TODO: Change the user roles in other part
+//                .roles(List.of(Role.ADMIN, Role.USER)) // TODO: Change the user roles in other part
                 .build();
         return userRepository.save(user);
     }
@@ -171,9 +172,8 @@ public class UserService {
         return encoder.matches(loginPassword, userPassword);
     }
 
-    private List<String> convertRole(List<User.Role> roles) {
-        return roles
-                .stream()
+    private List<String> convertRole(List<Role> roles) {
+        return roles.stream()
                 .map(Enum::name)
                 .toList();
     }

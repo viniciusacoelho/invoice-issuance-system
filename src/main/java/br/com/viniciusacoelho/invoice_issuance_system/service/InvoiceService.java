@@ -1,6 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
 import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Invoice;
@@ -29,7 +30,7 @@ public class InvoiceService {
     public Invoice create(InvoiceDTO invoiceDTO) {
         Invoice invoice = Invoice.builder()
                 .sequentialNumber(calculateSequentialNumber())
-                .status(Invoice.Status.OPEN)
+                .invoiceStatus(InvoiceStatus.OPEN)
                 .invoiceItems(invoiceItemService.create(invoiceDTO))
                 .totalPrice(BigDecimal.ZERO)
                 .build();
@@ -55,7 +56,7 @@ public class InvoiceService {
 
     public Invoice issue(Long id) {
         Invoice invoice = findById(id);
-        if (isStatusOpen(invoice.getStatus())) {
+        if (isStatusOpen(invoice.getInvoiceStatus())) {
             setStatusClosed(invoice);
             update(invoice);
             return invoice;
@@ -147,11 +148,11 @@ public class InvoiceService {
     }
 
     private static void setStatusClosed(Invoice invoice) {
-        invoice.setStatus(Invoice.Status.CLOSED);
+        invoice.setInvoiceStatus(InvoiceStatus.CLOSED);
     }
 
-    private static boolean isStatusOpen(Invoice.Status status) {
-        return status == Invoice.Status.OPEN;
+    private static boolean isStatusOpen(InvoiceStatus invoiceStatus) {
+        return invoiceStatus == InvoiceStatus.OPEN;
     }
 
 }

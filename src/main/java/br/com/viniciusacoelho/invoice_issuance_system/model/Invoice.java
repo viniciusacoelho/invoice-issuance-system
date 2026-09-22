@@ -1,5 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.model;
 
+import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -33,13 +35,9 @@ public class Invoice {
     @Column(unique = true)
     private long sequentialNumber;
 
-    public enum Status {
-        OPEN, CLOSED
-    }
-
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private Status status;
+    private InvoiceStatus invoiceStatus;
 
     @Column(nullable = false)
     private BigDecimal totalPrice;

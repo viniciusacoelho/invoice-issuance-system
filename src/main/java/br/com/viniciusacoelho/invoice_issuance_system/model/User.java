@@ -1,5 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.model;
 
+import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
@@ -52,10 +54,6 @@ public class User {
 
     @Column(length = 100, nullable = false)
     private String password;
-
-    public enum Role {
-        ADMIN, USER
-    }
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
