@@ -2,7 +2,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 
 import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
-import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.InvoiceCannotBeIssuedException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Invoice;
 import br.com.viniciusacoelho.invoice_issuance_system.model.InvoiceItem;
@@ -11,7 +11,6 @@ import br.com.viniciusacoelho.invoice_issuance_system.repository.InvoiceReposito
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -63,7 +62,7 @@ public class InvoiceService {
             invoice.setIssuedAt(LocalDateTime.now());
             return update(invoice);
         }
-        throw new BadRequestException("Status");
+        throw new InvoiceCannotBeIssuedException("A nota fiscal deve estar em aberto para ser emitida.");
     }
 
     public Invoice addProduct(Long invoiceId, InvoiceDTO invoiceDTO) {
