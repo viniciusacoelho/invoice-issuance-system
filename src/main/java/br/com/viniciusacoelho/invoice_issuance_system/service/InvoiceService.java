@@ -11,8 +11,10 @@ import br.com.viniciusacoelho.invoice_issuance_system.repository.InvoiceReposito
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -58,8 +60,8 @@ public class InvoiceService {
         Invoice invoice = findById(id);
         if (isStatusOpen(invoice.getInvoiceStatus())) {
             setStatusClosed(invoice);
-            update(invoice);
-            return invoice;
+            invoice.setIssuedAt(LocalDateTime.now());
+            return update(invoice);
         }
         throw new BadRequestException("Status");
     }

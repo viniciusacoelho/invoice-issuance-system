@@ -2,6 +2,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.model;
 
 import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -18,6 +19,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -51,5 +53,8 @@ public class Invoice {
     @Column(nullable = false)
     @ManyToMany
     private List<InvoiceItem> invoiceItems;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime issuedAt;
 
 }
