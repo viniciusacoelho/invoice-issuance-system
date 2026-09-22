@@ -4,7 +4,9 @@ import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerUpdateDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
+import br.com.viniciusacoelho.invoice_issuance_system.model.Address;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Customer;
+import br.com.viniciusacoelho.invoice_issuance_system.repository.AddressRepository;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.CustomerRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +21,22 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private ViaCepService viaCepService;
+
     public Customer create(CustomerDTO customerDTO) {
         Customer customer = Customer.builder()
                 .name(customerDTO.name())
                 .email(customerDTO.email())
                 .cpf(customerDTO.cpf())
                 .cnpj(customerDTO.cnpj())
-                .cep(customerDTO.cep())
                 .role(Role.USER)
                 .createdAt(LocalDateTime.now())
                 .build();
+        customer.setAddress(findAddressByCep(customerDTO.cep()));
         return customerRepository.save(customer);
     }
 
@@ -43,7 +51,7 @@ public class CustomerService {
         customer.setEmail(customerUpdateDTO.email());
         customer.setCpf(customerUpdateDTO.cpf());
         customer.setCnpj(customerUpdateDTO.cnpj());
-        customer.setCep(customerUpdateDTO.cep());
+        customer.setAddress(findAddressByCep(customerUpdateDTO.cep()));
         return customerRepository.save(customer);
     }
 
@@ -68,6 +76,17 @@ public class CustomerService {
         if (customerRepository.count() != 0) {
             throw new NotFoundException("Clientes");
         }
+    }
+
+    private Address findAddressByCep(String cep) {
+        return addressRepository.findById(cep)
+                .orElseGet(() -> createAddressByCep(cep));
+    }
+
+    private Address createAddressByCep(String cep) {
+        Address address = viaCepService.findByCep(cep)
+                .orElseThrow(() -> new NotFoundException("Endereço"));
+        return addressRepository.save(address);
     }
 
 }

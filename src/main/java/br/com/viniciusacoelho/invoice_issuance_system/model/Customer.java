@@ -3,12 +3,15 @@ package br.com.viniciusacoelho.invoice_issuance_system.model;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -43,8 +46,9 @@ public class Customer {
     @Column(length = 18, unique = true, nullable = false)
     private String cnpj;
 
-    @Column(length = 8, nullable = false)
-    private String cep;
+    @JoinColumn(nullable = false)
+    @ManyToOne
+    private Address address;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
