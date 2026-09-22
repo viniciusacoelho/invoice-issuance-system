@@ -36,13 +36,12 @@ public class UserService {
     private JWTConfig jwtConfig;
 
     public User create(UserDTO userDTO) {
-        existsFields(userDTO.email(), userDTO.username(), userDTO.cpf());
+        existsByEmail(userDTO.email());
+        existsByUsername(userDTO.username());
         User user = User.builder()
                 .name(userDTO.name())
                 .email(userDTO.email().toLowerCase().trim())
                 .username(userDTO.username().toLowerCase().trim())
-                .cpf(userDTO.cpf())
-                .cep(userDTO.cep())
                 .birthDate(userDTO.birthDate())
                 .password(encrypt(userDTO.password().trim()))
                 .createdAt(LocalDateTime.now())
@@ -65,23 +64,13 @@ public class UserService {
         if (!userUpdateDTO.username().equalsIgnoreCase(user.getUsername())) {
             existsByUsername(userUpdateDTO.username());
         }
-        if (!userUpdateDTO.cpf().equalsIgnoreCase(user.getCpf())) {
-            existsByCpf(userUpdateDTO.cpf());
-        }
-//        User user = findByEmail(userUpdateDTO.email());
-//        User user = findByUsername(userUpdateDTO.username());
         user.setName(userUpdateDTO.name());
         user.setEmail(userUpdateDTO.email());
         user.setUsername(userUpdateDTO.username());
-        user.setCpf(userUpdateDTO.cpf());
-        user.setCep(userUpdateDTO.cep());
         return userRepository.save(user);
     }
 
     public User delete(Long id) {
-//        User user = findById(id);
-//        User user = findByEmail(user.getEmail());
-//        User user = findByUsername(user.getUsername());
         hasUser(id);
         userRepository.deleteById(id);
         return null;
@@ -113,12 +102,6 @@ public class UserService {
     private void existsByUsername(String username) {
         if (userRepository.existsByUsername(username)) {
             throw new AlreadyExistsException("Usuário");
-        }
-    }
-
-    private void existsByCpf(String cpf) {
-        if (userRepository.existsByCpf(cpf)) {
-            throw new AlreadyExistsException("CPF");
         }
     }
 
@@ -154,14 +137,8 @@ public class UserService {
 
     private void hasUsers() {
         if (userRepository.count() == 0) {
-            throw new NotFoundException("Usuário");
+            throw new NotFoundException("Usuários");
         }
-    }
-
-    private void existsFields(String email, String username, String cpf) {
-        existsByEmail(email);
-        existsByUsername(username);
-        existsByCpf(cpf);
     }
 
     private String encrypt(String password) {

@@ -43,12 +43,6 @@ public class User {
     @Column(length = 50, unique = true, nullable = false)
     private String username;
 
-    @Column(length = 14, unique = true, nullable = false)
-    private String cpf;
-
-    @Column(length = 9, nullable = false)
-    private String cep;
-
     @Column(nullable = false)
     private LocalDate birthDate;
 

@@ -7,8 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.br.CPF;
-
 import java.time.LocalDate;
 
 public record UserDTO(
@@ -25,13 +23,6 @@ public record UserDTO(
         @NotNull(message = "O usuário é obrigatório.")
         @Size(min = 3, max = 50, message = "O usuário deve ter entre {min} e {max} caracteres.")
         String username,
-
-        @NotNull(message = "O CPF é obrigatório.")
-        @CPF(message = "O CPF deve ser válido.")
-        String cpf,
-
-        @NotNull(message = "O CEP é obrigatório.")
-        String cep,
 
         @NotNull(message = "A data de nascimento é obrigatória.")
         @PastOrPresent(message = "A data deve estar no passado ou presente.")
