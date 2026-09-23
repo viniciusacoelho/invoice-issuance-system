@@ -87,9 +87,15 @@ public class CustomerService {
     }
 
     private Address createAddressByCep(String cep) {
-        Address address = viaCepService.findByCep(cep)
-                .orElseThrow(() -> new NotFoundException("Endereço"));
+        Address address = viaCepService.findByCep(cep);
+        hasAddress(address);
         return addressRepository.save(address);
+    }
+
+    private void hasAddress(Address address) {
+        if (address.getCep() == null) {
+            throw new NotFoundException("CEP");
+        }
     }
 
     private String validatePhone(String phone) {

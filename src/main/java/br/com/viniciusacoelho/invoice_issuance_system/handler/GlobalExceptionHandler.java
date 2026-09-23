@@ -1,6 +1,12 @@
 package br.com.viniciusacoelho.invoice_issuance_system.handler;
 
-import br.com.viniciusacoelho.invoice_issuance_system.exception.*;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidCredentialsException;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.InvoiceCannotBeIssuedException;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
+
+import feign.FeignException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +50,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvoiceCannotBeIssuedException.class)
     public ResponseEntity<Object> handleInvalidCredentialsException(InvoiceCannotBeIssuedException e, WebRequest request) {
         return handle(e, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<Object> handleFeignException(FeignException e, WebRequest request) {
+        ResponseError errors = responseError("CEP inválido!", HttpStatus.BAD_REQUEST, request.getDescription(false).replace("uri=", ""));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
