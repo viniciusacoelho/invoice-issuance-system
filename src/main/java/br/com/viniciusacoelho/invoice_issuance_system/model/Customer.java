@@ -40,6 +40,9 @@ public class Customer {
     @Column(length = 50, unique = true, nullable = false)
     private String email;
 
+    @Column(length = 20, nullable = false)
+    private String phone;
+
     @Column(length = 14, unique = true, nullable = false)
     private String cpf;
 

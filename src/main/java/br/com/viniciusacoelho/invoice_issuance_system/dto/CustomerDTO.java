@@ -18,6 +18,9 @@ public record CustomerDTO(
         @Email(message = "O e-mail deve ser válido.")
         String email,
 
+        @NotNull(message = "O telefone é obrigatório.")
+        String phone,
+
         @NotNull(message = "O CPF é obrigatório.")
         @CPF(message = "O CPF deve ser válido.")
         String cpf,

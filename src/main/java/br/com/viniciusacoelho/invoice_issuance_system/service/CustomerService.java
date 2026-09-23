@@ -3,6 +3,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerUpdateDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Address;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Customer;
@@ -31,6 +32,7 @@ public class CustomerService {
         Customer customer = Customer.builder()
                 .name(customerDTO.name())
                 .email(customerDTO.email())
+                .phone(validatePhone(customerDTO.phone()))
                 .cpf(customerDTO.cpf())
                 .cnpj(customerDTO.cnpj())
                 .role(Role.USER)
@@ -49,6 +51,7 @@ public class CustomerService {
         Customer customer = findById(id);
         customer.setName(customerUpdateDTO.name());
         customer.setEmail(customerUpdateDTO.email());
+        customer.setPhone(validatePhone(customerUpdateDTO.phone()));
         customer.setCpf(customerUpdateDTO.cpf());
         customer.setCnpj(customerUpdateDTO.cnpj());
         customer.setAddress(findAddressByCep(customerUpdateDTO.cep()));
@@ -87,6 +90,13 @@ public class CustomerService {
         Address address = viaCepService.findByCep(cep)
                 .orElseThrow(() -> new NotFoundException("Endereço"));
         return addressRepository.save(address);
+    }
+
+    private String validatePhone(String phone) {
+        if (phone.matches("^[+]\\d{2} \\(\\d{2}\\) \\d{1} \\d{4}-\\d{4}$")) {
+            return phone;
+        }
+        throw new BadRequestException("Telefone");
     }
 
 }

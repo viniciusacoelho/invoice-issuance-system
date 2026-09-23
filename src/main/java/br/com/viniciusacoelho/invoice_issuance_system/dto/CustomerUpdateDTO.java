@@ -15,6 +15,8 @@ public record CustomerUpdateDTO(
         @Email(message = "O e-mail deve ser válido.")
         String email,
 
+        String phone,
+
         @CPF(message = "O CPF deve ser válido.")
         String cpf,
 
