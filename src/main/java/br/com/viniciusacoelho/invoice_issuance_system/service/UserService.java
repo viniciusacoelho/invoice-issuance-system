@@ -77,8 +77,8 @@ public class UserService {
     }
 
     public SessionDTO login(LoginDTO loginDTO) {
-        Optional<User> user = findByUsernameLogin(loginDTO.getUsername());
-        if (user.isPresent() && isPasswordMatches(loginDTO.getPassword(), user.get().getPassword())) {
+        Optional<User> user = findByUsernameLogin(loginDTO.username());
+        if (user.isPresent() && isPasswordMatches(loginDTO.password(), user.get().getPassword())) {
             JWTObject jwtObject = JWTObject.builder()
                     .subject(user.get().getUsername())
                     .issuedAt(new Date(System.currentTimeMillis()))
