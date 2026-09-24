@@ -3,6 +3,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerUpdateDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Address;
@@ -11,6 +12,7 @@ import br.com.viniciusacoelho.invoice_issuance_system.repository.AddressReposito
 import br.com.viniciusacoelho.invoice_issuance_system.repository.CustomerRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -81,7 +83,8 @@ public class CustomerService {
         }
     }
 
-    private Address findAddressByCep(String cep) {
+    @Cacheable(value = "viaCepCache", key = "#cep")
+    public Address findAddressByCep(String cep) {
         return addressRepository.findById(cep)
                 .orElseGet(() -> createAddressByCep(cep));
     }
