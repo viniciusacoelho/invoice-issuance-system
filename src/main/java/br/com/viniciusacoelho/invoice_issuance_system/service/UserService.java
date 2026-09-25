@@ -1,27 +1,19 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
-import br.com.viniciusacoelho.invoice_issuance_system.config.JWTConfig;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.LoginDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.SessionDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.UserDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.UserUpdateDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
-import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidCredentialsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.User;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.UserRepository;
-import br.com.viniciusacoelho.invoice_issuance_system.security.JWTCreator;
-import br.com.viniciusacoelho.invoice_issuance_system.security.JWTObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -31,9 +23,6 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder encoder;
-
-    @Autowired
-    private JWTConfig jwtConfig;
 
     public User create(UserDTO userDTO) {
         existsByEmail(userDTO.email());
@@ -76,37 +65,13 @@ public class UserService {
         return null;
     }
 
-    public SessionDTO login(LoginDTO loginDTO) {
-        Optional<User> user = findByUsernameLogin(loginDTO.username());
-        if (user.isPresent() && isPasswordMatches(loginDTO.password(), user.get().getPassword())) {
-            JWTObject jwtObject = JWTObject.builder()
-                    .subject(user.get().getUsername())
-                    .issuedAt(new Date(System.currentTimeMillis()))
-                    .expiration(new Date(System.currentTimeMillis() + jwtConfig.getExpiration()))
-                    .roles(convertRole(user.get().getRoles()))
-                    .build();
-            return SessionDTO.builder()
-                    .login(user.get().getUsername())
-                    .token(JWTCreator.create(jwtConfig.getPrefix(), jwtConfig.getKey(), jwtObject))
-                    .build();
-        }
-        throw new InvalidCredentialsException();
-    }
-
-    private void existsByEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
-            throw new AlreadyExistsException("E-mail");
-        }
-    }
-
-    private void existsByUsername(String username) {
-        if (userRepository.existsByUsername(username)) {
-            throw new AlreadyExistsException("Usuário");
-        }
-    }
-
     private User findById(Long id) {
         return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuário"));
+    }
+
+    public List<User> findByName(String name) {
+        return userRepository.findByNameContaining(name)
                 .orElseThrow(() -> new NotFoundException("Usuário"));
     }
 
@@ -120,13 +85,16 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("Usuário"));
     }
 
-    public Optional<User> findByUsernameLogin(String username) {
-        return userRepository.findByUsername(username);
+    private void existsByEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new AlreadyExistsException("E-mail");
+        }
     }
 
-    public List<User> findByName(String name) {
-        return userRepository.findByNameContaining(name)
-                .orElseThrow(() -> new NotFoundException("Usuário"));
+    private void existsByUsername(String username) {
+        if (userRepository.existsByUsername(username)) {
+            throw new AlreadyExistsException("Usuário");
+        }
     }
 
     private void hasUser(Long id) {
@@ -143,16 +111,6 @@ public class UserService {
 
     private String encrypt(String password) {
         return encoder.encode(password);
-    }
-
-    private boolean isPasswordMatches(String loginPassword, String userPassword) {
-        return encoder.matches(loginPassword, userPassword);
-    }
-
-    private List<String> convertRole(List<Role> roles) {
-        return roles.stream()
-                .map(Enum::name)
-                .toList();
     }
 
 }
