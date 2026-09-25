@@ -3,16 +3,12 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerUpdateDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
-import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
-import br.com.viniciusacoelho.invoice_issuance_system.model.Address;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Customer;
-import br.com.viniciusacoelho.invoice_issuance_system.repository.AddressRepository;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.CustomerRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,10 +21,7 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     @Autowired
-    private AddressRepository addressRepository;
-
-    @Autowired
-    private ViaCepService viaCepService;
+    private AddressService addressService;
 
     public Customer create(CustomerDTO customerDTO) {
         Customer customer = Customer.builder()
@@ -40,7 +33,7 @@ public class CustomerService {
                 .role(Role.USER)
                 .createdAt(LocalDateTime.now())
                 .build();
-        customer.setAddress(findAddressByCep(customerDTO.cep()));
+        customer.setAddress(addressService.findByCep(customerDTO.cep()));
         return customerRepository.save(customer);
     }
 
@@ -56,7 +49,7 @@ public class CustomerService {
         customer.setPhone(validatePhone(customerUpdateDTO.phone()));
         customer.setCpf(customerUpdateDTO.cpf());
         customer.setCnpj(customerUpdateDTO.cnpj());
-        customer.setAddress(findAddressByCep(customerUpdateDTO.cep()));
+        customer.setAddress(addressService.findByCep(customerUpdateDTO.cep()));
         return customerRepository.save(customer);
     }
 
@@ -80,24 +73,6 @@ public class CustomerService {
     private void hasCustomers() {
         if (customerRepository.count() != 0) {
             throw new NotFoundException("Clientes");
-        }
-    }
-
-    @Cacheable(value = "viaCepCache", key = "#cep")
-    public Address findAddressByCep(String cep) {
-        return addressRepository.findById(cep)
-                .orElseGet(() -> createAddressByCep(cep));
-    }
-
-    private Address createAddressByCep(String cep) {
-        Address address = viaCepService.findByCep(cep);
-        hasAddress(address);
-        return addressRepository.save(address);
-    }
-
-    private void hasAddress(Address address) {
-        if (address.getCep() == null) {
-            throw new NotFoundException("CEP");
         }
     }
 
