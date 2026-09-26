@@ -3,6 +3,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerUpdateDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Customer;
@@ -24,6 +25,9 @@ public class CustomerService {
     private AddressService addressService;
 
     public Customer create(CustomerDTO customerDTO) {
+        existsByEmail(customerDTO.email());
+        existsByCpf(customerDTO.cpf());
+        existsByCnpj(customerDTO.cnpj());
         Customer customer = Customer.builder()
                 .name(customerDTO.name())
                 .email(customerDTO.email())
@@ -44,6 +48,15 @@ public class CustomerService {
 
     public Customer update(Long id, CustomerUpdateDTO customerUpdateDTO) {
         Customer customer = findById(id);
+        if (!customer.getEmail().equalsIgnoreCase(customerUpdateDTO.email())) {
+            existsByEmail(customerUpdateDTO.email());
+        }
+        if (!customer.getCpf().equalsIgnoreCase(customerUpdateDTO.cpf())) {
+            existsByCpf(customerUpdateDTO.cpf());
+        }
+        if (!customer.getCnpj().equals(customerUpdateDTO.cnpj())) {
+            existsByCnpj(customerUpdateDTO.cnpj());
+        }
         customer.setName(customerUpdateDTO.name());
         customer.setEmail(customerUpdateDTO.email());
         customer.setPhone(validatePhone(customerUpdateDTO.phone()));
@@ -62,6 +75,24 @@ public class CustomerService {
     private Customer findById(Long id) {
         return customerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cliente"));
+    }
+
+    private void existsByEmail(String email) {
+        if (customerRepository.existsByEmail(email)) {
+            throw new AlreadyExistsException("E-mail");
+        }
+    }
+
+    private void existsByCpf(String cpf) {
+        if (customerRepository.existsByCpf(cpf)) {
+            throw new AlreadyExistsException("CPF");
+        }
+    }
+
+    private void existsByCnpj(String cnpj) {
+        if (customerRepository.existsByCnpj(cnpj)) {
+            throw new AlreadyExistsException("CNPJ");
+        }
     }
 
     private void hasCustomer(Long id) {
