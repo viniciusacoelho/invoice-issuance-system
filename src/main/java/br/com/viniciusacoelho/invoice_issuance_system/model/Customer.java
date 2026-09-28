@@ -1,13 +1,9 @@
 package br.com.viniciusacoelho.invoice_issuance_system.model;
 
-import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
@@ -52,10 +48,6 @@ public class Customer {
     @JoinColumn(nullable = false)
     @ManyToOne
     private Address address;
-
-    @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private Role role;
 
     @Column(nullable = false)
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
