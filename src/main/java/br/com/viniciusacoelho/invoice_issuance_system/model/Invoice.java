@@ -3,6 +3,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.model;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
@@ -42,19 +43,28 @@ public class Invoice {
     private InvoiceStatus invoiceStatus;
 
     @Column(nullable = false)
-    private BigDecimal totalPrice;
+    private Long userId;
 
-    @Column(nullable = false)
-    private int totalProductQuantity;
-
-// TODO: Check why it isn't working (it is adding the product_id to the products, not to the invoices).
+    // TODO: Check why it isn't working (it is adding the product_id to the products, not to the invoices).
 //    @OneToMany(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "product_id")
     @Column(nullable = false)
     @ManyToMany
     private List<InvoiceItem> invoiceItems;
 
+    @Column(nullable = false)
+    private BigDecimal totalPrice;
+
+    @Column(nullable = false)
+    private int totalQuantity;
+
+    @Column(nullable = false)
+    private Long customerId;
+
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private LocalDateTime issuedAt;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime createdAt;
 
 }

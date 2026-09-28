@@ -1,6 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
 import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceResponseDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.InvoiceCannotBeIssuedException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,8 +34,11 @@ public class InvoiceService {
         Invoice invoice = Invoice.builder()
                 .sequentialNumber(calculateSequentialNumber())
                 .invoiceStatus(InvoiceStatus.OPEN)
+                .customerId(invoiceDTO.customerId())
                 .invoiceItems(invoiceItemService.create(invoiceDTO))
                 .totalPrice(BigDecimal.ZERO)
+                .userId(invoiceDTO.userId())
+                .createdAt(LocalDateTime.now())
                 .build();
         sumTotalProductQuantity(invoice, invoice.getInvoiceItems());
         sumTotalPrice(invoice, invoice.getInvoiceItems());
@@ -107,11 +112,11 @@ public class InvoiceService {
 
     private void sumTotalProductQuantity(Invoice invoice, List<InvoiceItem> invoiceItems) {
         int productQuantity = calculateProductQuantity(invoiceItems);
-        invoice.setTotalProductQuantity(invoice.getTotalProductQuantity() + productQuantity);
+        invoice.setTotalQuantity(invoice.getTotalQuantity() + productQuantity);
     }
 
     private void subtractTotalProductQuantity(Invoice invoice, int productQuantity) {
-        invoice.setTotalProductQuantity(invoice.getTotalProductQuantity() - productQuantity);
+        invoice.setTotalQuantity(invoice.getTotalQuantity() - productQuantity);
     }
 
     private void sumTotalPrice(Invoice invoice, List<InvoiceItem> invoiceItems) {
@@ -122,8 +127,8 @@ public class InvoiceService {
     }
 
     private void subtractTotalPrice(Invoice invoice, Long productId, int productQuantity) {
-            Product product = productService.findById(productId);
-            invoice.setTotalPrice(calculateSubtractTotalPrice(invoice.getTotalPrice(), product.getPrice(), productQuantity));
+        Product product = productService.findById(productId);
+        invoice.setTotalPrice(calculateSubtractTotalPrice(invoice.getTotalPrice(), product.getPrice(), productQuantity));
     }
 
     private static int calculateProductQuantity(List<InvoiceItem> invoiceItems) {
