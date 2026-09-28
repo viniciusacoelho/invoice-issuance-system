@@ -45,9 +45,14 @@ public class InvoiceService {
         return invoiceRepository.save(invoice);
     }
 
-    public List<Invoice> read() {
+    public List<InvoiceResponseDTO> read() {
         hasInvoices();
-        return invoiceRepository.findAll();
+        List<InvoiceResponseDTO> invoices = new ArrayList<>();
+        for (InvoiceResponseDTO invoice : invoiceRepository.findAllInvoices()) {
+            invoice.setInvoiceItems(invoiceItemService.findAllByInvoiceId(invoice.getId()));
+            invoices.add(invoice);
+        }
+        return invoices;
     }
 
     public Invoice update(Invoice invoice) {
@@ -60,6 +65,7 @@ public class InvoiceService {
         return null; //  TODO: Return another thing
     }
 
+    // TODO:
     public Invoice issue(Long id) {
         Invoice invoice = findById(id);
         if (isStatusOpen(invoice.getInvoiceStatus())) {
@@ -69,6 +75,16 @@ public class InvoiceService {
         }
         throw new InvoiceCannotBeIssuedException("A nota fiscal deve estar em aberto para ser emitida.");
     }
+//    public Invoice issue(Long invoiceId, Long userId) {
+//        Invoice invoice = findById(invoiceId);
+//        if (isStatusOpen(invoice.getInvoiceStatus())) {
+//            setStatusClosed(invoice);
+//            invoice.setUserId(userId);
+//            invoice.setIssuedAt(LocalDateTime.now());
+//            return update(invoice);
+//        }
+//        throw new InvoiceCannotBeIssuedException("A nota fiscal deve estar em aberto para ser emitida.");
+//    }
 
     public Invoice addProduct(Long invoiceId, InvoiceDTO invoiceDTO) {
         Invoice invoice = findById(invoiceId);

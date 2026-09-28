@@ -1,6 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
 import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceItemResponseDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.InvoiceItem;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
@@ -34,6 +35,10 @@ public class InvoiceItemService {
             add(productId, productQuantity, invoiceItems, invoiceItem);
         }
         return invoiceItemRepository.saveAll(invoiceItems);
+    }
+
+    public List<InvoiceItemResponseDTO> findAllByInvoiceId(Long id) {
+        return invoiceItemRepository.findAllByInvoiceId(id);
     }
 
     public void add(Long productId, Integer productQuantity, List<InvoiceItem> invoiceItems, InvoiceItem invoiceItem) {

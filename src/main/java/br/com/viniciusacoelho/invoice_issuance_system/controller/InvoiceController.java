@@ -1,6 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.controller;
 
 import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceResponseDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Invoice;
 import br.com.viniciusacoelho.invoice_issuance_system.service.InvoiceService;
 
@@ -32,7 +33,7 @@ public class InvoiceController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Invoice>> read() {
+    public ResponseEntity<List<InvoiceResponseDTO>> read() {
         return ResponseEntity.ok(invoiceService.read());
     }
 
