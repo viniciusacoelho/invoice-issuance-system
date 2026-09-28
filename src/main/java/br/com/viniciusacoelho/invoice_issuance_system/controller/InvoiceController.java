@@ -1,7 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.controller;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceResponseDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.InvoiceRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.response.InvoiceResponseDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Invoice;
 import br.com.viniciusacoelho.invoice_issuance_system.service.InvoiceService;
 
@@ -28,8 +28,8 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @PostMapping
-    public ResponseEntity<Invoice> create(@Valid @RequestBody InvoiceDTO invoiceDTO) {
-        return ResponseEntity.ok(invoiceService.create(invoiceDTO));
+    public ResponseEntity<Invoice> create(@Valid @RequestBody InvoiceRequestDTO invoiceRequestDTO) {
+        return ResponseEntity.ok(invoiceService.create(invoiceRequestDTO));
     }
 
     @GetMapping
@@ -43,13 +43,13 @@ public class InvoiceController {
 //    }
 
     @PutMapping("/{id}/add")
-    public ResponseEntity<Invoice> addProduct(@PathVariable("id") Long id, @Valid @RequestBody InvoiceDTO invoiceDTO) {
-        return ResponseEntity.ok(invoiceService.addProduct(id, invoiceDTO));
+    public ResponseEntity<Invoice> addProduct(@PathVariable("id") Long id, @Valid @RequestBody InvoiceRequestDTO invoiceRequestDTO) {
+        return ResponseEntity.ok(invoiceService.addProduct(id, invoiceRequestDTO));
     }
 
     @PutMapping("/{id}/remove")
-    public ResponseEntity<Invoice> removeProduct(@PathVariable("id") Long id, @Valid @RequestBody InvoiceDTO invoiceDTO) {
-        return ResponseEntity.ok(invoiceService.removeProduct(id, invoiceDTO));
+    public ResponseEntity<Invoice> removeProduct(@PathVariable("id") Long id, @Valid @RequestBody InvoiceRequestDTO invoiceRequestDTO) {
+        return ResponseEntity.ok(invoiceService.removeProduct(id, invoiceRequestDTO));
     }
 
     @DeleteMapping("/{id}")

@@ -1,8 +1,8 @@
-package br.com.viniciusacoelho.invoice_issuance_system.dto;
+package br.com.viniciusacoelho.invoice_issuance_system.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 
-public record LoginDTO(
+public record LoginRequestDTO(
 
         @NotNull(message = "O usuário é obrigatório.")
         String username,

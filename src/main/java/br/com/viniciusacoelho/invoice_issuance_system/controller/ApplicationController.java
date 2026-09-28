@@ -1,15 +1,17 @@
 package br.com.viniciusacoelho.invoice_issuance_system.controller;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.LoginDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.SessionDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.model.User;
-import br.com.viniciusacoelho.invoice_issuance_system.service.UserService;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.LoginRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.response.SessionResponseDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.model.Address;
+import br.com.viniciusacoelho.invoice_issuance_system.service.AddressService;
+import br.com.viniciusacoelho.invoice_issuance_system.service.LoginService;
 
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApplicationController {
 
     @Autowired
-    private UserService userService;
+    private LoginService loginService;
+
+    @Autowired
+    private AddressService addressService;
 
     @GetMapping
     public String init() {
@@ -31,8 +36,8 @@ public class ApplicationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<SessionDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
-        return ResponseEntity.accepted().body(userService.login(loginDTO));
+    public ResponseEntity<SessionResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
+        return ResponseEntity.accepted().body(loginService.login(loginRequestDTO));
     }
 
 // TODO:
@@ -40,5 +45,11 @@ public class ApplicationController {
 //    public ResponseEntity<User> logout(@Valid @RequestBody LoginDTO loginDTO) {
 //        return ResponseEntity.accepted().body(userService.login(loginDTO));
 //    }
+
+    // TODO: Remove it, because it's just a endpoint for test addresses
+    @GetMapping("/address/{cep}")
+    public Address findByCep(@PathVariable("cep") String cep) {
+        return addressService.findByCep(cep);
+    }
 
 }

@@ -1,7 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.controller;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.UserDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.UserUpdateDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.UserRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.UserUpdateRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.model.User;
 import br.com.viniciusacoelho.invoice_issuance_system.service.UserService;
 
@@ -30,8 +30,8 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> create(@Valid @RequestBody UserDTO userDTO) {
-        User user = userService.create(userDTO);
+    public ResponseEntity<User> create(@Valid @RequestBody UserRequestDTO userRequestDTO) {
+        User user = userService.create(userRequestDTO);
         // Constrói a URI do novo recurso criado (/users/{id})
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -46,8 +46,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> update(@PathVariable("id") Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
-        return ResponseEntity.ok(userService.update(id, userUpdateDTO));
+    public ResponseEntity<User> update(@PathVariable("id") Long id, @Valid @RequestBody UserUpdateRequestDTO userUpdateRequestDTO) {
+        return ResponseEntity.ok(userService.update(id, userUpdateRequestDTO));
     }
 
     @DeleteMapping("/{id}")

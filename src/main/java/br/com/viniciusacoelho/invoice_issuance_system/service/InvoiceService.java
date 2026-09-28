@@ -1,7 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceResponseDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.InvoiceRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.response.InvoiceResponseDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.InvoiceCannotBeIssuedException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
@@ -30,16 +30,16 @@ public class InvoiceService {
     @Autowired
     private ProductService productService;
 
-    public Invoice create(InvoiceDTO invoiceDTO) {
+    public Invoice create(InvoiceRequestDTO invoiceRequestDTO) {
         Invoice invoice = Invoice.builder()
                 .sequentialNumber(calculateSequentialNumber())
                 .invoiceStatus(InvoiceStatus.OPEN)
-                .customerId(invoiceDTO.customerId())
+                .customerId(invoiceRequestDTO.customerId())
                 .totalPrice(BigDecimal.ZERO)
-                .userId(invoiceDTO.userId())
+                .userId(invoiceRequestDTO.userId())
                 .createdAt(LocalDateTime.now())
                 .build();
-        invoice.setInvoiceItems(invoiceItemService.create(invoice.getSequentialNumber(), invoiceDTO));
+        invoice.setInvoiceItems(invoiceItemService.create(invoice.getSequentialNumber(), invoiceRequestDTO));
         sumTotalProductQuantity(invoice, invoice.getInvoiceItems());
         sumTotalPrice(invoice, invoice.getInvoiceItems());
         return invoiceRepository.save(invoice);
@@ -86,20 +86,20 @@ public class InvoiceService {
 //        throw new InvoiceCannotBeIssuedException("A nota fiscal deve estar em aberto para ser emitida.");
 //    }
 
-    public Invoice addProduct(Long invoiceId, InvoiceDTO invoiceDTO) {
+    public Invoice addProduct(Long invoiceId, InvoiceRequestDTO invoiceRequestDTO) {
         Invoice invoice = findById(invoiceId);
-        List<InvoiceItem> invoiceItems = invoiceItemService.create(invoiceId, invoiceDTO);
+        List<InvoiceItem> invoiceItems = invoiceItemService.create(invoiceId, invoiceRequestDTO);
         sumTotalProductQuantity(invoice, invoiceItems);
         sumTotalPrice(invoice, invoiceItems);
         invoice.getInvoiceItems().addAll(invoiceItems);
         return update(invoice);
     }
 
-    public Invoice removeProduct(Long invoiceId, InvoiceDTO invoiceDTO) {
+    public Invoice removeProduct(Long invoiceId, InvoiceRequestDTO invoiceRequestDTO) {
         Invoice invoice = findById(invoiceId);
         for (int i = 0; i < invoice.getInvoiceItems().size(); i++) {
-            Long productId = invoiceDTO.invoiceItemsDTO().get(i).productId();
-            int productQuantity = invoiceDTO.invoiceItemsDTO().get(i).productQuantity();
+            Long productId = invoiceRequestDTO.invoiceItemsDTO().get(i).productId();
+            int productQuantity = invoiceRequestDTO.invoiceItemsDTO().get(i).productQuantity();
             if (productId.equals(invoice.getInvoiceItems().get(i).getProductId())) {
                 subtractTotalProductQuantity(invoice, productQuantity);
                 subtractTotalPrice(invoice, productId, productQuantity);

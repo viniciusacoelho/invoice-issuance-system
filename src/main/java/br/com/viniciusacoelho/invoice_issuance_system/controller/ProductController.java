@@ -1,7 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.controller;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.ProductDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.ProductUpdateDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.ProductRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.ProductUpdateRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
 import br.com.viniciusacoelho.invoice_issuance_system.service.ProductService;
 
@@ -28,8 +28,8 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping
-    public ResponseEntity<Product> create(@Valid @RequestBody ProductDTO productDTO) {
-        return ResponseEntity.ok(productService.create(productDTO));
+    public ResponseEntity<Product> create(@Valid @RequestBody ProductRequestDTO productRequestDTO) {
+        return ResponseEntity.ok(productService.create(productRequestDTO));
     }
 
     @GetMapping
@@ -38,8 +38,8 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> update(@PathVariable("id") Long id, @Valid @RequestBody ProductUpdateDTO productUpdateDTO) {
-        return ResponseEntity.ok(productService.update(id, productUpdateDTO));
+    public ResponseEntity<Product> update(@PathVariable("id") Long id, @Valid @RequestBody ProductUpdateRequestDTO productUpdateRequestDTO) {
+        return ResponseEntity.ok(productService.update(id, productUpdateRequestDTO));
     }
 
     @DeleteMapping("/{id}")

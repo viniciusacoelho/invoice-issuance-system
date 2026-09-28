@@ -1,7 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.ProductDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.ProductUpdateDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.ProductRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.ProductUpdateRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
@@ -18,14 +18,14 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    public Product create(ProductDTO productDTO) {
+    public Product create(ProductRequestDTO productRequestDTO) {
         Product product = Product.builder()
                 .code(createCode())
-                .name(productDTO.name())
-                .description(productDTO.description())
-                .price(productDTO.price())
-                .stock(productDTO.stock())
-                .category(productDTO.category())
+                .name(productRequestDTO.name())
+                .description(productRequestDTO.description())
+                .price(productRequestDTO.price())
+                .stock(productRequestDTO.stock())
+                .category(productRequestDTO.category())
                 .build();
         return productRepository.save(product);
     }
@@ -36,13 +36,13 @@ public class ProductService {
     }
 
     // TODO: Check why it is saving with null values.
-    public Product update(Long id, ProductUpdateDTO productUpdateDTO) {
+    public Product update(Long id, ProductUpdateRequestDTO productUpdateRequestDTO) {
         Product product = findById(id);
-        product.setName(productUpdateDTO.name());
-        product.setDescription(productUpdateDTO.description());
-        product.setPrice(productUpdateDTO.price());
-        product.setStock(productUpdateDTO.stock());
-        product.setCategory(productUpdateDTO.category());
+        product.setName(productUpdateRequestDTO.name());
+        product.setDescription(productUpdateRequestDTO.description());
+        product.setPrice(productUpdateRequestDTO.price());
+        product.setStock(productUpdateRequestDTO.stock());
+        product.setCategory(productUpdateRequestDTO.category());
         return productRepository.save(product);
     }
 

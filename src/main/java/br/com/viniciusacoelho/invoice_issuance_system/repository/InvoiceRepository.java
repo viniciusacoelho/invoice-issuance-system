@@ -1,6 +1,6 @@
 package br.com.viniciusacoelho.invoice_issuance_system.repository;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceResponseDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.response.InvoiceResponseDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Invoice;
 
 import org.springframework.data.jpa.repository.JpaRepository;

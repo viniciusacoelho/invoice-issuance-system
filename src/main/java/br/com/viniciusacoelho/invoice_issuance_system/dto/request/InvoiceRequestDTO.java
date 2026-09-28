@@ -1,10 +1,10 @@
-package br.com.viniciusacoelho.invoice_issuance_system.dto;
+package br.com.viniciusacoelho.invoice_issuance_system.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record InvoiceDTO(
+public record InvoiceRequestDTO(
 
         @NotNull(message = "O usuário é obrigatório.")
         Long userId,
@@ -13,7 +13,7 @@ public record InvoiceDTO(
         Long customerId,
 
         @NotNull(message = "O produto é obrigatório.")
-        List<InvoiceItemDTO> invoiceItemsDTO
+        List<InvoiceItemRequestDTO> invoiceItemsDTO
 
 ) {
 

@@ -1,4 +1,4 @@
-package br.com.viniciusacoelho.invoice_issuance_system.dto;
+package br.com.viniciusacoelho.invoice_issuance_system.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.br.CNPJ;
 import org.hibernate.validator.constraints.br.CPF;
 
-public record CustomerDTO(
+public record CustomerRequestDTO(
 
         @NotNull(message = "O nome é obrigatório.")
         @Size(min = 3, max = 50, message = "O nome deve ter entre {min} e {max} caracteres.")

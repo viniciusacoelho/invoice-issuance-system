@@ -1,4 +1,4 @@
-package br.com.viniciusacoelho.invoice_issuance_system.dto;
+package br.com.viniciusacoelho.invoice_issuance_system.dto.response;
 
 import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
 

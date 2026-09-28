@@ -1,7 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.controller;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerUpdateDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.CustomerRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.CustomerUpdateRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Customer;
 import br.com.viniciusacoelho.invoice_issuance_system.service.CustomerService;
 
@@ -28,8 +28,8 @@ public class CustomerController {
     private CustomerService customerService;
 
     @PostMapping
-    public ResponseEntity<Customer> create(@RequestBody CustomerDTO customerDTO) {
-        Customer customer = customerService.create(customerDTO);
+    public ResponseEntity<Customer> create(@RequestBody CustomerRequestDTO customerRequestDTO) {
+        Customer customer = customerService.create(customerRequestDTO);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(customer.getId())
@@ -43,8 +43,8 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> update(@PathVariable("id") Long id, @RequestBody CustomerUpdateDTO customerUpdateDTO) {
-        return ResponseEntity.ok(customerService.update(id, customerUpdateDTO));
+    public ResponseEntity<Customer> update(@PathVariable("id") Long id, @RequestBody CustomerUpdateRequestDTO customerUpdateRequestDTO) {
+        return ResponseEntity.ok(customerService.update(id, customerUpdateRequestDTO));
     }
 
     @DeleteMapping("/{id}")

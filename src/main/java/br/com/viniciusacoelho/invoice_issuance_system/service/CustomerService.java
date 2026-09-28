@@ -1,8 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.CustomerUpdateDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.CustomerRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.CustomerUpdateRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
@@ -24,20 +23,19 @@ public class CustomerService {
     @Autowired
     private AddressService addressService;
 
-    public Customer create(CustomerDTO customerDTO) {
-        existsByEmail(customerDTO.email());
-        existsByCpf(customerDTO.cpf());
-        existsByCnpj(customerDTO.cnpj());
+    public Customer create(CustomerRequestDTO customerRequestDTO) {
+        existsByEmail(customerRequestDTO.email());
+        existsByCpf(customerRequestDTO.cpf());
+        existsByCnpj(customerRequestDTO.cnpj());
         Customer customer = Customer.builder()
-                .name(customerDTO.name())
-                .email(customerDTO.email())
-                .phone(validatePhone(customerDTO.phone()))
-                .cpf(customerDTO.cpf())
-                .cnpj(customerDTO.cnpj())
-                .role(Role.USER)
+                .name(customerRequestDTO.name())
+                .email(customerRequestDTO.email())
+                .phone(validatePhone(customerRequestDTO.phone()))
+                .cpf(customerRequestDTO.cpf())
+                .cnpj(customerRequestDTO.cnpj())
                 .createdAt(LocalDateTime.now())
                 .build();
-        customer.setAddress(addressService.findByCep(customerDTO.cep()));
+        customer.setAddress(addressService.findByCep(customerRequestDTO.cep()));
         return customerRepository.save(customer);
     }
 
@@ -46,23 +44,23 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public Customer update(Long id, CustomerUpdateDTO customerUpdateDTO) {
+    public Customer update(Long id, CustomerUpdateRequestDTO customerUpdateRequestDTO) {
         Customer customer = findById(id);
-        if (!customer.getEmail().equalsIgnoreCase(customerUpdateDTO.email())) {
-            existsByEmail(customerUpdateDTO.email());
+        if (!customer.getEmail().equalsIgnoreCase(customerUpdateRequestDTO.email())) {
+            existsByEmail(customerUpdateRequestDTO.email());
         }
-        if (!customer.getCpf().equalsIgnoreCase(customerUpdateDTO.cpf())) {
-            existsByCpf(customerUpdateDTO.cpf());
+        if (!customer.getCpf().equalsIgnoreCase(customerUpdateRequestDTO.cpf())) {
+            existsByCpf(customerUpdateRequestDTO.cpf());
         }
-        if (!customer.getCnpj().equals(customerUpdateDTO.cnpj())) {
-            existsByCnpj(customerUpdateDTO.cnpj());
+        if (!customer.getCnpj().equals(customerUpdateRequestDTO.cnpj())) {
+            existsByCnpj(customerUpdateRequestDTO.cnpj());
         }
-        customer.setName(customerUpdateDTO.name());
-        customer.setEmail(customerUpdateDTO.email());
-        customer.setPhone(validatePhone(customerUpdateDTO.phone()));
-        customer.setCpf(customerUpdateDTO.cpf());
-        customer.setCnpj(customerUpdateDTO.cnpj());
-        customer.setAddress(addressService.findByCep(customerUpdateDTO.cep()));
+        customer.setName(customerUpdateRequestDTO.name());
+        customer.setEmail(customerUpdateRequestDTO.email());
+        customer.setPhone(validatePhone(customerUpdateRequestDTO.phone()));
+        customer.setCpf(customerUpdateRequestDTO.cpf());
+        customer.setCnpj(customerUpdateRequestDTO.cnpj());
+        customer.setAddress(addressService.findByCep(customerUpdateRequestDTO.cep()));
         return customerRepository.save(customer);
     }
 

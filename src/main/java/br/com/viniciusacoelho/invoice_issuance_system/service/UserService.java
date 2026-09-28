@@ -1,7 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.UserDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.UserUpdateDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.UserRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.UserUpdateRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
@@ -24,15 +24,15 @@ public class UserService {
     @Autowired
     private PasswordEncoder encoder;
 
-    public User create(UserDTO userDTO) {
-        existsByEmail(userDTO.email());
-        existsByUsername(userDTO.username());
+    public User create(UserRequestDTO userRequestDTO) {
+        existsByEmail(userRequestDTO.email());
+        existsByUsername(userRequestDTO.username());
         User user = User.builder()
-                .name(userDTO.name())
-                .email(userDTO.email().toLowerCase().trim())
-                .username(userDTO.username().toLowerCase().trim())
-                .birthDate(userDTO.birthDate())
-                .password(encrypt(userDTO.password().trim()))
+                .name(userRequestDTO.name())
+                .email(userRequestDTO.email().toLowerCase().trim())
+                .username(userRequestDTO.username().toLowerCase().trim())
+                .birthDate(userRequestDTO.birthDate())
+                .password(encrypt(userRequestDTO.password().trim()))
                 .createdAt(LocalDateTime.now())
                 .roles(List.of(Role.USER)) // TODO: Change the user roles in other part
 //                .roles(List.of(Role.ADMIN, Role.USER)) // TODO: Change the user roles in other part
@@ -45,17 +45,17 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User update(Long id, UserUpdateDTO userUpdateDTO) {
+    public User update(Long id, UserUpdateRequestDTO userUpdateRequestDTO) {
         User user = findById(id);
-        if (!userUpdateDTO.email().equalsIgnoreCase(user.getEmail())) {
-            existsByEmail(userUpdateDTO.email());
+        if (!userUpdateRequestDTO.email().equalsIgnoreCase(user.getEmail())) {
+            existsByEmail(userUpdateRequestDTO.email());
         }
-        if (!userUpdateDTO.username().equalsIgnoreCase(user.getUsername())) {
-            existsByUsername(userUpdateDTO.username());
+        if (!userUpdateRequestDTO.username().equalsIgnoreCase(user.getUsername())) {
+            existsByUsername(userUpdateRequestDTO.username());
         }
-        user.setName(userUpdateDTO.name());
-        user.setEmail(userUpdateDTO.email());
-        user.setUsername(userUpdateDTO.username());
+        user.setName(userUpdateRequestDTO.name());
+        user.setEmail(userUpdateRequestDTO.email());
+        user.setUsername(userUpdateRequestDTO.username());
         return userRepository.save(user);
     }
 

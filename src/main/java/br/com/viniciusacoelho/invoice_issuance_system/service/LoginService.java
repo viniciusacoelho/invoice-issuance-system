@@ -1,8 +1,8 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
 import br.com.viniciusacoelho.invoice_issuance_system.config.JWTConfig;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.LoginDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.SessionDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.LoginRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.response.SessionResponseDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidCredentialsException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.User;
@@ -29,9 +29,10 @@ public class LoginService {
     @Autowired
     private JWTConfig jwtConfig;
 
-    public SessionDTO login(LoginDTO loginDTO) {
-        Optional<User> user = Optional.ofNullable(userService.findByUsername(loginDTO.username()));
-        if (user.isPresent() && isPasswordMatches(loginDTO.password(), user.get().getPassword())) {
+    // TODO: Consume control (how many times the user can make login in the system)
+    public SessionResponseDTO login(LoginRequestDTO loginRequestDTO) {
+        Optional<User> user = Optional.ofNullable(userService.findByUsername(loginRequestDTO.username()));
+        if (user.isPresent() && isPasswordMatches(loginRequestDTO.password(), user.get().getPassword())) {
             return session(user.get());
         }
         throw new InvalidCredentialsException();
@@ -41,8 +42,8 @@ public class LoginService {
         return encoder.matches(loginPassword, userPassword);
     }
 
-    private SessionDTO session(User user) {
-        return SessionDTO.builder()
+    private SessionResponseDTO session(User user) {
+        return SessionResponseDTO.builder()
                 .login(user.getUsername())
                 .token(JWTCreator.create(jwtConfig.getPrefix(), jwtConfig.getKey(), jwtObject(user)))
                 .build();

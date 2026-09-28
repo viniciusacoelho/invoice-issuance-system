@@ -1,7 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
-import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.dto.InvoiceItemResponseDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.request.InvoiceRequestDTO;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.response.InvoiceItemResponseDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.InvoiceItem;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
@@ -22,11 +22,11 @@ public class InvoiceItemService {
     @Autowired
     private ProductService productService;
 
-    public List<InvoiceItem> create(Long invoiceId, InvoiceDTO invoiceDTO) {
+    public List<InvoiceItem> create(Long invoiceId, InvoiceRequestDTO invoiceRequestDTO) {
         List<InvoiceItem> invoiceItems = new ArrayList<>();
-        for (int i = 0; i < invoiceDTO.invoiceItemsDTO().size(); i++) {
-            Long productId = invoiceDTO.invoiceItemsDTO().get(i).productId();
-            int productQuantity = invoiceDTO.invoiceItemsDTO().get(i).productQuantity();
+        for (int i = 0; i < invoiceRequestDTO.invoiceItemsDTO().size(); i++) {
+            Long productId = invoiceRequestDTO.invoiceItemsDTO().get(i).productId();
+            int productQuantity = invoiceRequestDTO.invoiceItemsDTO().get(i).productQuantity();
             InvoiceItem invoiceItem = InvoiceItem.builder()
                     .invoiceId(invoiceId)
                     .productId(productId)
