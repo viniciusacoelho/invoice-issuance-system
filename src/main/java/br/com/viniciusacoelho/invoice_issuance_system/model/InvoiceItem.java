@@ -25,6 +25,9 @@ public class InvoiceItem {
     private Long id;
 
     @Column(nullable = false)
+    private Long invoiceId;
+
+    @Column(nullable = false)
     private Long productId;
 
     @Column(nullable = false)

@@ -21,12 +21,13 @@ public class InvoiceItemService {
     @Autowired
     private ProductService productService;
 
-    public List<InvoiceItem> create(InvoiceDTO invoiceDTO) {
+    public List<InvoiceItem> create(Long invoiceId, InvoiceDTO invoiceDTO) {
         List<InvoiceItem> invoiceItems = new ArrayList<>();
         for (int i = 0; i < invoiceDTO.invoiceItemsDTO().size(); i++) {
             Long productId = invoiceDTO.invoiceItemsDTO().get(i).productId();
             int productQuantity = invoiceDTO.invoiceItemsDTO().get(i).productQuantity();
             InvoiceItem invoiceItem = InvoiceItem.builder()
+                    .invoiceId(invoiceId)
                     .productId(productId)
                     .productQuantity(productQuantity)
                     .build();

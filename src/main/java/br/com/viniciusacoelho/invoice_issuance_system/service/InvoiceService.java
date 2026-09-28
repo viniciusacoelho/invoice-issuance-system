@@ -35,11 +35,11 @@ public class InvoiceService {
                 .sequentialNumber(calculateSequentialNumber())
                 .invoiceStatus(InvoiceStatus.OPEN)
                 .customerId(invoiceDTO.customerId())
-                .invoiceItems(invoiceItemService.create(invoiceDTO))
                 .totalPrice(BigDecimal.ZERO)
                 .userId(invoiceDTO.userId())
                 .createdAt(LocalDateTime.now())
                 .build();
+        invoice.setInvoiceItems(invoiceItemService.create(invoice.getSequentialNumber(), invoiceDTO));
         sumTotalProductQuantity(invoice, invoice.getInvoiceItems());
         sumTotalPrice(invoice, invoice.getInvoiceItems());
         return invoiceRepository.save(invoice);
@@ -72,7 +72,7 @@ public class InvoiceService {
 
     public Invoice addProduct(Long invoiceId, InvoiceDTO invoiceDTO) {
         Invoice invoice = findById(invoiceId);
-        List<InvoiceItem> invoiceItems = invoiceItemService.create(invoiceDTO);
+        List<InvoiceItem> invoiceItems = invoiceItemService.create(invoiceId, invoiceDTO);
         sumTotalProductQuantity(invoice, invoiceItems);
         sumTotalPrice(invoice, invoiceItems);
         invoice.getInvoiceItems().addAll(invoiceItems);
