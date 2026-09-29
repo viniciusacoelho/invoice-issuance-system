@@ -20,4 +20,12 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             """)
     List<InvoiceResponseDTO> findAllInvoices();
 
+    @Query("""
+            SELECT i.id, i.invoiceStatus, c.name, i.totalPrice, i.totalQuantity, i.issuedAt, i.createdAt, u.name
+                FROM Invoice i, Customer c, User u
+                WHERE c.id = i.customerId AND u.id = i.userId AND i.id = :id
+                ORDER BY i.id ASC
+            """)
+    InvoiceResponseDTO findInvoiceById(Long id);
+
 }

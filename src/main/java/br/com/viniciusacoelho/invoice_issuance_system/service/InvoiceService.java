@@ -65,26 +65,17 @@ public class InvoiceService {
         return null; //  TODO: Return another thing
     }
 
-    // TODO:
-    public Invoice issue(Long id) {
+    public InvoiceResponseDTO issue(Long id) {
+//    public InvoiceResponseDTO issue(Long invoiceId, Long userId) {
         Invoice invoice = findById(id);
         if (isStatusOpen(invoice.getInvoiceStatus())) {
             setStatusClosed(invoice);
             invoice.setIssuedAt(LocalDateTime.now());
-            return update(invoice);
+            update(invoice);
+            return readById(id);
         }
         throw new InvoiceCannotBeIssuedException("A nota fiscal deve estar em aberto para ser emitida.");
     }
-//    public Invoice issue(Long invoiceId, Long userId) {
-//        Invoice invoice = findById(invoiceId);
-//        if (isStatusOpen(invoice.getInvoiceStatus())) {
-//            setStatusClosed(invoice);
-//            invoice.setUserId(userId);
-//            invoice.setIssuedAt(LocalDateTime.now());
-//            return update(invoice);
-//        }
-//        throw new InvoiceCannotBeIssuedException("A nota fiscal deve estar em aberto para ser emitida.");
-//    }
 
     public Invoice addProduct(Long invoiceId, InvoiceRequestDTO invoiceRequestDTO) {
         Invoice invoice = findById(invoiceId);
@@ -107,6 +98,12 @@ public class InvoiceService {
             }
         }
         return update(invoice);
+    }
+
+    private InvoiceResponseDTO readById(Long id) {
+        InvoiceResponseDTO invoice = invoiceRepository.findInvoiceById(id);
+        invoice.setInvoiceItems(invoiceItemService.findAllByInvoiceId(invoice.getId()));
+        return invoice;
     }
 
     private Invoice findById(Long id) {

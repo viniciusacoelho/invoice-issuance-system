@@ -58,7 +58,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}/issue")
-    public ResponseEntity<Invoice> issue(@PathVariable("id") Long id) {
+    public ResponseEntity<InvoiceResponseDTO> issue(@PathVariable("id") Long id) {
         return ResponseEntity.ok(invoiceService.issue(id));
     }
 
