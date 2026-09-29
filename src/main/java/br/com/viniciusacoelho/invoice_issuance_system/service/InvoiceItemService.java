@@ -7,6 +7,7 @@ import br.com.viniciusacoelho.invoice_issuance_system.repository.InvoiceItemRepo
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class InvoiceItemService {
     @Autowired
     private ProductService productService;
 
+    @Transactional
     public List<InvoiceItem> create(Long invoiceId, InvoiceRequestDTO invoiceRequestDTO) {
         List<InvoiceItem> invoiceItems = new ArrayList<>();
         for (int i = 0; i < invoiceRequestDTO.invoiceItemsDTO().size(); i++) {

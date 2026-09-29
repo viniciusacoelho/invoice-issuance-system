@@ -9,6 +9,7 @@ import br.com.viniciusacoelho.invoice_issuance_system.repository.ProductReposito
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -119,7 +120,7 @@ public class ProductService {
 
     public void addStock(Long id, Integer quantity) {
         Product product = findById(id);
-        if (isStockValid(product.getStock())) {
+        if (isStockValid(product.getStock(), quantity)) {
             product.setStock(product.getStock() + quantity);
             productRepository.save(product);
             return;
@@ -127,9 +128,10 @@ public class ProductService {
         throw new BadRequestException("Estoque");
     }
 
+    @Transactional
     public void removeStock(Long id, Integer quantity) {
-        Product product = findById(id);
-        if (isStockValid(product.getStock())) {
+        Product product = findByIdWithLock(id);
+        if (isStockValid(product.getStock(), quantity)) {
             product.setStock(product.getStock() - quantity);
             productRepository.save(product);
             return;
@@ -155,8 +157,13 @@ public class ProductService {
         }
     }
 
-    private static boolean isStockValid(Integer stock) {
-        return stock > 0;
+    private Product findByIdWithLock(Long id) {
+        return productRepository.findByIdWithLock(id)
+                .orElseThrow(() -> new NotFoundException("Produto"));
+    }
+
+    private static boolean isStockValid(Integer stock, Integer quantity) {
+        return quantity > 0 && quantity <= stock;
     }
 
     // TODO: Make it more clean
