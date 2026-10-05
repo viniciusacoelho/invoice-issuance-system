@@ -5,6 +5,7 @@ import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestExcept
 import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidCredentialsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.InvoiceCannotBeIssuedException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.OperationAlreadyInProgressException;
 
 import feign.FeignException;
 
@@ -50,6 +51,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvoiceCannotBeIssuedException.class)
     public ResponseEntity<Object> handleInvalidCredentialsException(InvoiceCannotBeIssuedException e, WebRequest request) {
         return handle(e, HttpStatus.BAD_REQUEST, request);
+    }
+
+    @ExceptionHandler(OperationAlreadyInProgressException.class)
+    public ResponseEntity<Object> handleOperationAlreadyInProgressException(OperationAlreadyInProgressException e, WebRequest request) {
+        return handle(e, HttpStatus.CONFLICT, request);
     }
 
     @ExceptionHandler(FeignException.class)

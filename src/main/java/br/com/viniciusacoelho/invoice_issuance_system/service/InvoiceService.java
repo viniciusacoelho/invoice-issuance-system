@@ -5,6 +5,8 @@ import br.com.viniciusacoelho.invoice_issuance_system.dto.response.InvoiceRespon
 import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.InvoiceCannotBeIssuedException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
+import br.com.viniciusacoelho.invoice_issuance_system.exception.OperationAlreadyInProgressException;
+import br.com.viniciusacoelho.invoice_issuance_system.model.IdempotencyKey;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Invoice;
 import br.com.viniciusacoelho.invoice_issuance_system.model.InvoiceItem;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
@@ -12,11 +14,13 @@ import br.com.viniciusacoelho.invoice_issuance_system.repository.InvoiceReposito
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class InvoiceService {
@@ -30,10 +34,23 @@ public class InvoiceService {
     @Autowired
     private ProductService productService;
 
-    public Invoice create(InvoiceRequestDTO invoiceRequestDTO) {
+    @Autowired
+    private IdempotencyKeyService idempotencyKeyService;
+
+    @Transactional
+    public Invoice create(InvoiceRequestDTO invoiceRequestDTO, String idempotencyKey) {
+        Optional<IdempotencyKey> key = idempotencyKeyService.findById(idempotencyKey);
+        if (key.isPresent()) {
+            if (IdempotencyKeyService.isStatusProcessing(key.get().getStatus())) {
+                throw new OperationAlreadyInProgressException();
+            } else if (IdempotencyKeyService.isStatusCompleted(key.get().getStatus())) {
+                return findById(key.get().getInvoiceId());
+            }
+        }
+        IdempotencyKey keyReserved = idempotencyKeyService.reserve(idempotencyKey);
         Invoice invoice = Invoice.builder()
                 .sequentialNumber(calculateSequentialNumber())
-                .invoiceStatus(InvoiceStatus.OPEN)
+                .status(InvoiceStatus.OPEN)
                 .customerId(invoiceRequestDTO.customerId())
                 .totalPrice(BigDecimal.ZERO)
                 .userId(invoiceRequestDTO.userId())
@@ -42,7 +59,9 @@ public class InvoiceService {
         invoice.setInvoiceItems(invoiceItemService.create(invoice.getSequentialNumber(), invoiceRequestDTO));
         sumTotalProductQuantity(invoice, invoice.getInvoiceItems());
         sumTotalPrice(invoice, invoice.getInvoiceItems());
-        return invoiceRepository.save(invoice);
+        Invoice newInvoice = invoiceRepository.save(invoice);
+        idempotencyKeyService.update(keyReserved, invoice.getId());
+        return newInvoice;
     }
 
     public List<InvoiceResponseDTO> read() {
@@ -65,10 +84,11 @@ public class InvoiceService {
         return null; //  TODO: Return another thing
     }
 
+    // TODO: CSV issuing
     public InvoiceResponseDTO issue(Long id) {
 //    public InvoiceResponseDTO issue(Long invoiceId, Long userId) {
         Invoice invoice = findById(id);
-        if (isStatusOpen(invoice.getInvoiceStatus())) {
+        if (isStatusOpen(invoice.getStatus())) {
             setStatusClosed(invoice);
             invoice.setIssuedAt(LocalDateTime.now());
             update(invoice);
@@ -167,7 +187,7 @@ public class InvoiceService {
     }
 
     private static void setStatusClosed(Invoice invoice) {
-        invoice.setInvoiceStatus(InvoiceStatus.CLOSED);
+        invoice.setStatus(InvoiceStatus.CLOSED);
     }
 
     private static boolean isStatusOpen(InvoiceStatus invoiceStatus) {

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,8 +29,8 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @PostMapping
-    public ResponseEntity<Invoice> create(@Valid @RequestBody InvoiceRequestDTO invoiceRequestDTO) {
-        return ResponseEntity.ok(invoiceService.create(invoiceRequestDTO));
+    public ResponseEntity<Invoice> create(@Valid @RequestBody InvoiceRequestDTO invoiceRequestDTO, @RequestHeader("Idempotency-Key") String idempotencyKey) {
+        return ResponseEntity.ok(invoiceService.create(invoiceRequestDTO, idempotencyKey));
     }
 
     @GetMapping
