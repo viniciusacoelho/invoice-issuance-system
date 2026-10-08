@@ -16,8 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -92,9 +97,40 @@ public class InvoiceService {
             setStatusClosed(invoice);
             invoice.setIssuedAt(LocalDateTime.now());
             update(invoice);
+            try {
+                createCsv(id);
+            } catch (IOException e) {
+                throw new InvoiceCannotBeIssuedException("A nota fiscal não pode ser emitida.");
+            }
             return readById(id);
         }
         throw new InvoiceCannotBeIssuedException("A nota fiscal deve estar em aberto para ser emitida.");
+    }
+
+    public void createCsv(Long id) throws IOException {
+        InvoiceResponseDTO invoice = readById(id);
+        File file = new File("issues\\invoice-" + invoice.getId() + ".txt");
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file.getPath()));
+        bufferedWriter.write("-------------------------------------------------------------\n                         NOTA FISCAL\n-------------------------------------------------------------\n\n");
+        bufferedWriter.write("ID:        " + invoice.getId().toString() + '\n');
+        bufferedWriter.write("Status:    " + (isStatusOpen(invoice.getStatus()) ? "" : "Fechado\n"));
+        bufferedWriter.write("Cliente:   " + invoice.getCustomerName() + '\n');
+        bufferedWriter.write("Usuário:   " + invoice.getUserName() + '\n');
+        bufferedWriter.write("Emitido:   " + invoice.getIssuedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + '\n');
+        bufferedWriter.write("Criado em: " + invoice.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + "\n\n");
+        bufferedWriter.write("-------------------------------------------------------------\nProdutos:\n-------------------------------------------------------------\nID     Produto                      Qtd.          Preço unit.\n");
+        for (int i = 0; i < invoice.getInvoiceItems().size(); i++) {
+            bufferedWriter.write(invoice.getInvoiceItems().get(i).id().toString());
+            bufferedWriter.write(" - " + invoice.getInvoiceItems().get(i).name());
+            bufferedWriter.write("               " + invoice.getInvoiceItems().get(i).quantity() + 'x');
+            bufferedWriter.write("   R$ " + invoice.getInvoiceItems().get(i).price().toString().replace('.', ',') + '\n');
+        }
+        bufferedWriter.write("\n-------------------------------------------------------------\n");
+        bufferedWriter.write("Total de itens: " + invoice.getTotalQuantity() + 'x');
+        bufferedWriter.write("\nValor total: R$ " + invoice.getTotalPrice().toString().replace('.', ','));
+        bufferedWriter.write("\n-------------------------------------------------------------");
+        bufferedWriter.close();
+//        log.info("Arquivo emitido com sucesso no caminho issues/user-{}.csv!", user.getId());
     }
 
     public Invoice addProduct(Long invoiceId, InvoiceRequestDTO invoiceRequestDTO) {

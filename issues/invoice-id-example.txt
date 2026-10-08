@@ -1,0 +1,22 @@
+-------------------------------------------------------------
+                         NOTA FISCAL
+-------------------------------------------------------------
+
+ID:        [INVOICE_ID]
+Status:    [STATUS]
+Cliente:   [CUSTOMER_NAME]
+Usuário:   [USER_NAME]
+Emitido:   [ISSUED_AT]
+Criado em: [CREATED_AT]
+
+-------------------------------------------------------------
+Produtos:
+-------------------------------------------------------------
+ID     Produto                      Qtd.          Preço unit.
+[ID] - [PRODUCT_NAME]               [QUANTITY]x   R$ [PRICE]
+[ID] - [PRODUCT_NAME]               [QUANTITY]x   R$ [PRICE]
+
+-------------------------------------------------------------
+Total de itens: [TOTAL_QUANTITY]x
+Valor total:    R$ [TOTAL_PRICE]
+-------------------------------------------------------------
