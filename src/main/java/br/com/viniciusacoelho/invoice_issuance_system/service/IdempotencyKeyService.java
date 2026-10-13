@@ -1,6 +1,6 @@
 package br.com.viniciusacoelho.invoice_issuance_system.service;
 
-import br.com.viniciusacoelho.invoice_issuance_system.enums.IdempotencyKeyStatus;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.IdempotencyKeyStatus;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.OperationAlreadyInProgressException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.IdempotencyKey;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.IdempotencyKeyRepository;

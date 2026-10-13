@@ -1,6 +1,6 @@
 package br.com.viniciusacoelho.invoice_issuance_system.dto.response;
 
-import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.InvoiceStatus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

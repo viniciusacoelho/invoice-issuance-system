@@ -1,6 +1,6 @@
 package br.com.viniciusacoelho.invoice_issuance_system.model;
 
-import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.InvoiceStatus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -40,7 +40,7 @@ public class Invoice {
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private InvoiceStatus invoiceStatus;
+    private InvoiceStatus status;
 
     @Column(nullable = false)
     private Long userId;

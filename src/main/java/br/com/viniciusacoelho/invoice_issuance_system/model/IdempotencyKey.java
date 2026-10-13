@@ -1,6 +1,6 @@
 package br.com.viniciusacoelho.invoice_issuance_system.model;
 
-import br.com.viniciusacoelho.invoice_issuance_system.enums.IdempotencyKeyStatus;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.IdempotencyKeyStatus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

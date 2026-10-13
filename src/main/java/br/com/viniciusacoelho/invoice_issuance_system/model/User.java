@@ -1,6 +1,6 @@
 package br.com.viniciusacoelho.invoice_issuance_system.model;
 
-import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.Role;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -40,17 +40,18 @@ public class User {
     @Column(length = 50, unique = true, nullable = false)
     private String email;
 
-    @Column(length = 50, unique = true, nullable = false)
-    private String username;
-
     @Column(nullable = false)
     private LocalDate birthDate;
+
+    @Column(length = 50, unique = true, nullable = false)
+    private String username;
 
     @Column(length = 100, nullable = false)
     private String password;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
+//    @ManyToOne
     private List<Role> roles;
 
     @Column(nullable = false)

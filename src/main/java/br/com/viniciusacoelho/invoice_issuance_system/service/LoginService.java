@@ -3,7 +3,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 import br.com.viniciusacoelho.invoice_issuance_system.config.JWTConfig;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.request.LoginRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.response.SessionResponseDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.Role;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidCredentialsException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.User;
 import br.com.viniciusacoelho.invoice_issuance_system.security.JWTCreator;

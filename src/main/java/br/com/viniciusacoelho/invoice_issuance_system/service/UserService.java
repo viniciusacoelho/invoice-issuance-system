@@ -2,7 +2,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 
 import br.com.viniciusacoelho.invoice_issuance_system.dto.request.UserRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.request.UserUpdateRequestDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.enums.Role;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.Role;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.User;

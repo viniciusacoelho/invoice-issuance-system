@@ -1,11 +1,6 @@
-package br.com.viniciusacoelho.invoice_issuance_system.handler;
+package br.com.viniciusacoelho.invoice_issuance_system.exception;
 
-import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
-import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
-import br.com.viniciusacoelho.invoice_issuance_system.exception.InvalidCredentialsException;
-import br.com.viniciusacoelho.invoice_issuance_system.exception.InvoiceCannotBeIssuedException;
-import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
-import br.com.viniciusacoelho.invoice_issuance_system.exception.OperationAlreadyInProgressException;
+import br.com.viniciusacoelho.invoice_issuance_system.dto.response.ErrorResponseDTO;
 
 import feign.FeignException;
 
@@ -60,7 +55,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<Object> handleFeignException(FeignException e, WebRequest request) {
-        ResponseError errors = responseError("CEP inválido!", HttpStatus.BAD_REQUEST, request.getDescription(false).replace("uri=", ""));
+        ErrorResponseDTO errors = errorResponseDTO("CEP inválido!", HttpStatus.BAD_REQUEST, request.getDescription(false).replace("uri=", ""));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
@@ -73,12 +68,12 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<Object> handle(Exception e, HttpStatus status, WebRequest request) {
-        ResponseError errors = responseError(e.getMessage(), status, request.getDescription(false).replace("uri=", ""));
+        ErrorResponseDTO errors = errorResponseDTO(e.getMessage(), status, request.getDescription(false).replace("uri=", ""));
         return ResponseEntity.status(status).body(errors);
     }
 
-    private ResponseError responseError(String message, HttpStatus status, String path) {
-        return ResponseError.builder()
+    private ErrorResponseDTO errorResponseDTO(String message, HttpStatus status, String path) {
+        return ErrorResponseDTO.builder()
                 .timestamp(LocalDateTime.now())
                 .statusCode(status.value())
                 .httpStatus(status.name())

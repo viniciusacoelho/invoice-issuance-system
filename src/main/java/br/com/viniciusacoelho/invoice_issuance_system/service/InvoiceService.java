@@ -2,7 +2,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 
 import br.com.viniciusacoelho.invoice_issuance_system.dto.request.InvoiceRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.response.InvoiceResponseDTO;
-import br.com.viniciusacoelho.invoice_issuance_system.enums.InvoiceStatus;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.InvoiceStatus;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.InvoiceCannotBeIssuedException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.OperationAlreadyInProgressException;
@@ -89,7 +89,6 @@ public class InvoiceService {
         return null; //  TODO: Return another thing
     }
 
-    // TODO: CSV issuing
     public InvoiceResponseDTO issue(Long id) {
 //    public InvoiceResponseDTO issue(Long invoiceId, Long userId) {
         Invoice invoice = findById(id);
@@ -98,7 +97,7 @@ public class InvoiceService {
             invoice.setIssuedAt(LocalDateTime.now());
             update(invoice);
             try {
-                createCsv(id);
+                createTxt(id);
             } catch (IOException e) {
                 throw new InvoiceCannotBeIssuedException("A nota fiscal não pode ser emitida.");
             }
@@ -107,7 +106,7 @@ public class InvoiceService {
         throw new InvoiceCannotBeIssuedException("A nota fiscal deve estar em aberto para ser emitida.");
     }
 
-    public void createCsv(Long id) throws IOException {
+    public void createTxt(Long id) throws IOException {
         InvoiceResponseDTO invoice = readById(id);
         File file = new File("issues\\invoice-" + invoice.getId() + ".txt");
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file.getPath()));
@@ -130,7 +129,6 @@ public class InvoiceService {
         bufferedWriter.write("\nValor total: R$ " + invoice.getTotalPrice().toString().replace('.', ','));
         bufferedWriter.write("\n-------------------------------------------------------------");
         bufferedWriter.close();
-//        log.info("Arquivo emitido com sucesso no caminho issues/user-{}.csv!", user.getId());
     }
 
     public Invoice addProduct(Long invoiceId, InvoiceRequestDTO invoiceRequestDTO) {
