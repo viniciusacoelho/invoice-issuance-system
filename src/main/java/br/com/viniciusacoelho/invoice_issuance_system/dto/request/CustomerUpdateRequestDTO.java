@@ -1,5 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.dto.request;
 
+import br.com.viniciusacoelho.invoice_issuance_system.util.validation.Phone;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
@@ -15,6 +17,7 @@ public record CustomerUpdateRequestDTO(
         @Email(message = "O e-mail deve ser válido.")
         String email,
 
+        @Phone(message = "O telefone deve ser válido.")
         String phone,
 
         @CPF(message = "O CPF deve ser válido.")

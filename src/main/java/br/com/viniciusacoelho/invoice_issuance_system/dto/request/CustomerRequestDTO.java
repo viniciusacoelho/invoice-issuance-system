@@ -1,5 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.dto.request;
 
+import br.com.viniciusacoelho.invoice_issuance_system.util.validation.Phone;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -19,6 +21,7 @@ public record CustomerRequestDTO(
         String email,
 
         @NotNull(message = "O telefone é obrigatório.")
+        @Phone(message = "O telefone deve ser válido.")
         String phone,
 
         @NotNull(message = "O CPF é obrigatório.")

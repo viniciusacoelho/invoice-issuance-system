@@ -3,7 +3,6 @@ package br.com.viniciusacoelho.invoice_issuance_system.service;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.request.CustomerRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.request.CustomerUpdateRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.AlreadyExistsException;
-import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Customer;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.CustomerRepository;
@@ -30,7 +29,7 @@ public class CustomerService {
         Customer customer = Customer.builder()
                 .name(customerRequestDTO.name())
                 .email(customerRequestDTO.email())
-                .phone(validatePhone(customerRequestDTO.phone()))
+                .phone(customerRequestDTO.phone())
                 .cpf(customerRequestDTO.cpf())
                 .cnpj(customerRequestDTO.cnpj())
                 .createdAt(LocalDateTime.now())
@@ -57,7 +56,7 @@ public class CustomerService {
         }
         customer.setName(customerUpdateRequestDTO.name());
         customer.setEmail(customerUpdateRequestDTO.email());
-        customer.setPhone(validatePhone(customerUpdateRequestDTO.phone()));
+        customer.setPhone(customerUpdateRequestDTO.phone());
         customer.setCpf(customerUpdateRequestDTO.cpf());
         customer.setCnpj(customerUpdateRequestDTO.cnpj());
         customer.setAddress(addressService.findByCep(customerUpdateRequestDTO.cep()));
@@ -103,13 +102,6 @@ public class CustomerService {
         if (customerRepository.count() != 0) {
             throw new NotFoundException("Clientes");
         }
-    }
-
-    private String validatePhone(String phone) {
-        if (phone.matches("^[+]\\d{2} \\(\\d{2}\\) \\d{1} \\d{4}-\\d{4}$")) {
-            return phone;
-        }
-        throw new BadRequestException("Telefone");
     }
 
 }
