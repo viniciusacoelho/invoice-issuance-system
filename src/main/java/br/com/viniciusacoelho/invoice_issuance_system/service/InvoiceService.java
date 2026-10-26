@@ -11,6 +11,7 @@ import br.com.viniciusacoelho.invoice_issuance_system.model.Invoice;
 import br.com.viniciusacoelho.invoice_issuance_system.model.InvoiceItem;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.InvoiceRepository;
+import br.com.viniciusacoelho.invoice_issuance_system.util.TimeUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -115,8 +115,8 @@ public class InvoiceService {
         bufferedWriter.write("Status:    " + (isStatusOpen(invoice.getStatus()) ? "" : "Fechado\n"));
         bufferedWriter.write("Cliente:   " + invoice.getCustomerName() + '\n');
         bufferedWriter.write("Usuário:   " + invoice.getUserName() + '\n');
-        bufferedWriter.write("Emitido:   " + invoice.getIssuedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + '\n');
-        bufferedWriter.write("Criado em: " + invoice.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + "\n\n");
+        bufferedWriter.write("Emitido:   " + TimeUtil.formatDateTime(invoice.getIssuedAt()) + '\n');
+        bufferedWriter.write("Criado em: " + TimeUtil.formatDateTime(invoice.getCreatedAt()) + "\n\n");
         bufferedWriter.write("-------------------------------------------------------------\nProdutos:\n-------------------------------------------------------------\nID     Produto                      Qtd.          Preço unit.\n");
         for (int i = 0; i < invoice.getInvoiceItems().size(); i++) {
             bufferedWriter.write(invoice.getInvoiceItems().get(i).id().toString());
