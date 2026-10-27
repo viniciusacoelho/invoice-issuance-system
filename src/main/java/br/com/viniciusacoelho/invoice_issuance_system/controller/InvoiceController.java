@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -30,7 +32,12 @@ public class InvoiceController {
 
     @PostMapping
     public ResponseEntity<Invoice> create(@Valid @RequestBody InvoiceRequestDTO invoiceRequestDTO, @RequestHeader("Idempotency-Key") String idempotencyKey) {
-        return ResponseEntity.ok(invoiceService.create(invoiceRequestDTO, idempotencyKey));
+        Invoice invoice = invoiceService.create(invoiceRequestDTO, idempotencyKey);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(invoice.getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(invoice);
     }
 
     @GetMapping

@@ -32,7 +32,6 @@ public class UserController {
     @PostMapping
     public ResponseEntity<User> create(@Valid @RequestBody UserRequestDTO userRequestDTO) {
         User user = userService.create(userRequestDTO);
-        // Constrói a URI do novo recurso criado (/users/{id})
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(user.getId())
