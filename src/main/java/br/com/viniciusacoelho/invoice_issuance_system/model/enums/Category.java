@@ -9,6 +9,8 @@ public enum Category {
     BEBIDAS,
     HIGIENE_E_BELEZA,
     LIMPEZA,
-    PAPELARIA
+    PAPELARIA,
+    MOVEIS,
+    ACESSORIOS
 
 }
