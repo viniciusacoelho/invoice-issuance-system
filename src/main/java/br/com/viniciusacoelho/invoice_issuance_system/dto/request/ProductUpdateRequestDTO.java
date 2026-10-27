@@ -1,5 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.dto.request;
 
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.Category;
+
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
@@ -20,8 +22,7 @@ public record ProductUpdateRequestDTO(
         @PositiveOrZero(message = "O estoque deve ser maior ou igual a zero.")
         Integer stock,
 
-        @Size(min = 3, max = 50, message = "A categoria deve ter entre {min} e {max} caracteres.")
-        String category
+        Category category
 
 ) {
 

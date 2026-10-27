@@ -1,7 +1,11 @@
 package br.com.viniciusacoelho.invoice_issuance_system.model;
 
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.Category;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,7 +45,8 @@ public class Product {
     @Column(nullable = false)
     private Integer stock;
 
-    @Column(length = 50, nullable = false)
-    private String category;
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Category category;
 
 }

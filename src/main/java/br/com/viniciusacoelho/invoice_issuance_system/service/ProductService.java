@@ -5,6 +5,7 @@ import br.com.viniciusacoelho.invoice_issuance_system.dto.request.ProductUpdateR
 import br.com.viniciusacoelho.invoice_issuance_system.exception.BadRequestException;
 import br.com.viniciusacoelho.invoice_issuance_system.exception.NotFoundException;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.Category;
 import br.com.viniciusacoelho.invoice_issuance_system.repository.ProductRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class ProductService {
         return products;
     }
 
-    public List<Product> filterByCategory(String category) {
+    public List<Product> filterByCategory(Category category) {
         List<Product> products = productRepository.findByCategory(category);
         hasProducts(products);
         return products;

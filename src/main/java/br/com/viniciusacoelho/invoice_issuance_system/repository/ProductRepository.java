@@ -1,6 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.repository;
 
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.Category;
 
 import jakarta.persistence.LockModeType;
 
@@ -22,7 +23,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByNameContaining(String name);
 
-    List<Product> findByCategory(String category);
+    List<Product> findByCategory(Category category);
 
     List<Product> findByNameContainingOrderByPriceAsc(String name);
 

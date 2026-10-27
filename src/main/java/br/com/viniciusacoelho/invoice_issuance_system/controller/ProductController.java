@@ -3,6 +3,7 @@ package br.com.viniciusacoelho.invoice_issuance_system.controller;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.request.ProductRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.dto.request.ProductUpdateRequestDTO;
 import br.com.viniciusacoelho.invoice_issuance_system.model.Product;
+import br.com.viniciusacoelho.invoice_issuance_system.model.enums.Category;
 import br.com.viniciusacoelho.invoice_issuance_system.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -61,7 +62,7 @@ public class ProductController {
     }
 
     @GetMapping("/filter/category={category}")
-    public ResponseEntity<List<Product>> filterByCategory(@PathVariable("category") String category) {
+    public ResponseEntity<List<Product>> filterByCategory(@PathVariable("category") Category category) {
         return ResponseEntity.ok(productService.filterByCategory(category));
     }
 
