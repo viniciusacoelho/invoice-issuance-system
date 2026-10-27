@@ -1,6 +1,7 @@
 package br.com.viniciusacoelho.invoice_issuance_system.model;
 
 import br.com.viniciusacoelho.invoice_issuance_system.model.enums.Category;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +18,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
@@ -48,5 +50,9 @@ public class Product {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private Category category;
+
+    @Column(nullable = false)
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm:ss")
+    private LocalDateTime createdAt;
 
 }
